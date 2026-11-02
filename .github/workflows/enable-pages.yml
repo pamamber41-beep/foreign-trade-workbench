@@ -8,7 +8,6 @@ on:
 permissions:
   pages: write
   contents: write
-  administration: write
 
 jobs:
   enable:
@@ -51,7 +50,6 @@ jobs:
           echo "FINAL HTTP $final_code"
           cat /tmp/final.json
 
-          # 把结果写进文件供外部读取
           {
             echo "# Pages enable result"
             echo "run_at: $(date -u +%FT%TZ)"
