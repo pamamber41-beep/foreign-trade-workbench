@@ -1,0 +1,50 @@
+name: Enable Pages (one-shot)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/enable-pages.yml'
+
+permissions:
+  pages: write
+  contents: read
+
+jobs:
+  enable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Pages status
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          code=$(curl -s -o /tmp/pages.json -w "%{http_code}" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/pages)
+          echo "GET status=$code"
+          if [ "$code" = "404" ]; then
+            echo "not_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            cat /tmp/pages.json || true
+          fi
+
+      - name: Enable Pages via API
+        if: steps.check.outputs.not_exists == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "Creating Pages site..."
+          curl -s -w "\nHTTP %{http_code}\n" -X POST \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/pages \
+            -d '{"source":{"branch":"main","path":"/"}}'
+
+      - name: Verify
+        run: |
+          sleep 5
+          curl -s \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/$GITHUB_REPOSITORY/pages | head -30
