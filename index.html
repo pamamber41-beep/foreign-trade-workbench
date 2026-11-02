@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外贸询盘工作台</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+         background: #f5f6f8; color: #222; padding: 24px; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .sub { color: #888; font-size: 13px; margin-bottom: 20px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tab { padding: 8px 16px; background: #fff; border-radius: 6px; cursor: pointer;
+         border: 1px solid #e2e4e8; font-size: 14px; }
+  .tab.active { background: #2f6fed; color: #fff; border-color: #2f6fed; }
+  .card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e2e4e8; }
+  label { display: block; font-size: 13px; color: #555; margin: 12px 0 4px; }
+  input, textarea { width: 100%; padding: 8px 10px; border: 1px solid #d0d3d9;
+                    border-radius: 5px; font-size: 14px; font-family: inherit; }
+  textarea { min-height: 80px; resize: vertical; }
+  button { margin-top: 16px; padding: 10px 20px; background: #2f6fed; color: #fff;
+           border: none; border-radius: 5px; font-size: 14px; cursor: pointer; }
+  button:hover { background: #2458c4; }
+  button:disabled { background: #a8b8d8; cursor: not-allowed; }
+  .msg { margin-top: 12px; padding: 10px; border-radius: 5px; font-size: 13px; display: none; }
+  .msg.ok { background: #e6f4ea; color: #1e7e34; display: block; }
+  .msg.err { background: #fdecea; color: #c0392b; display: block; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+  th { background: #fafbfc; color: #666; font-weight: 500; }
+  .hint { font-size: 12px; color: #999; margin-top: 6px; line-height: 1.6; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+</style>
+</head>
+<body>
+  <h1>外贸询盘工作台</h1>
+  <div class="sub">点一下就把询盘推进 GitHub Actions → 自动清洗 → 写进 leads.csv → 飞书通知你</div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="submit">录入询盘</div>
+    <div class="tab" data-tab="leads">最近线索</div>
+    <div class="tab" data-tab="settings">仓库设置</div>
+  </div>
+
+  <div class="card" id="p-submit">
+    <div class="row">
+      <div><label>客户姓名</label><input id="name" placeholder="John"></div>
+      <div><label>公司</label><input id="company" placeholder="Acme Electronics"></div>
+    </div>
+    <div class="row">
+      <div><label>邮箱</label><input id="email" placeholder="john@acme.com"></div>
+      <div><label>国家</label><input id="country" placeholder="USA"></div>
+    </div>
+    <label>目标型号 / 需求</label>
+    <input id="part" placeholder="如: 10uH 功率电感, 5000pcs">
+    <label>询盘内容</label>
+    <textarea id="message" placeholder="客户原话, 可空"></textarea>
+    <button id="submitBtn">提交询盘</button>
+    <div class="msg" id="submitMsg"></div>
+  </div>
+
+  <div class="card" id="p-leads" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong>线索池 (data/leads.csv)</strong>
+      <button onclick="loadLeads()" style="margin:0;padding:6px 12px">刷新</button>
+    </div>
+    <div id="leadsTable"><div class="hint">点击刷新读取最新线索。首次使用前请先在"仓库设置"里填好仓库信息。</div></div>
+  </div>
+
+  <div class="card" id="p-settings" style="display:none">
+    <label>GitHub 用户名 (owner)</label>
+    <input id="owner" placeholder="你的GitHub账号名">
+    <label>仓库名 (repo)</label>
+    <input id="repo" placeholder="foreign-trade-workbench">
+    <label>Personal Access Token (PAT, 需要 repo 权限)</label>
+    <input id="token" type="password" placeholder="ghp_xxxxxxxx">
+    <div class="hint">
+      1. 打开 https://github.com/settings/tokens?type=beta  → Generate new token<br>
+      2. 权限只勾: Contents (读写) + Actions (读写) + Workflows (读写)<br>
+      3. Token 只存在你自己浏览器 localStorage, 不上传到任何地方
+    </div>
+    <button onclick="saveSettings()">保存设置</button>
+    <div class="msg" id="setMsg"></div>
+  </div>
+
+<script>
+  // Tab 切换
+  document.querySelectorAll('.tab').forEach(t => {
+    t.onclick = () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      ['submit','leads','settings'].forEach(k => {
+        document.getElementById('p-'+k).style.display = k===t.dataset.tab ? 'block' : 'none';
+      });
+      if (t.dataset.tab === 'leads') loadLeads();
+    };
+  });
+
+  // 读/写设置
+  function getSettings() {
+    return {
+      owner: localStorage.getItem('ft_owner') || '',
+      repo:  localStorage.getItem('ft_repo')  || '',
+      token: localStorage.getItem('ft_token') || ''
+    };
+  }
+  function saveSettings() {
+    localStorage.setItem('ft_owner', document.getElementById('owner').value.trim());
+    localStorage.setItem('ft_repo',  document.getElementById('repo').value.trim());
+    localStorage.setItem('ft_token', document.getElementById('token').value.trim());
+    const m = document.getElementById('setMsg');
+    m.className = 'msg ok'; m.textContent = '已保存到本机浏览器';
+  }
+  (function initSettings(){
+    const s = getSettings();
+    document.getElementById('owner').value = s.owner;
+    document.getElementById('repo').value = s.repo;
+    document.getElementById('token').value = s.token;
+  })();
+
+  // 提交询盘 → 触发 repository_dispatch
+  document.getElementById('submitBtn').onclick = async () => {
+    const s = getSettings();
+    if (!s.owner || !s.repo || !s.token) {
+      const m = document.getElementById('submitMsg');
+      m.className = 'msg err';
+      m.textContent = '先去"仓库设置"填 owner / repo / token';
+      return;
+    }
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = '提交中...';
+    const payload = {
+      name: document.getElementById('name').value.trim(),
+      company: document.getElementById('company').value.trim(),
+      email: document.getElementById('email').value.trim().toLowerCase(),
+      country: document.getElementById('country').value.trim(),
+      part: document.getElementById('part').value.trim(),
+      message: document.getElementById('message').value.trim(),
+      source: 'webbench',
+      ts: new Date().toISOString()
+    };
+    try {
+      const r = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/dispatches`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + s.token,
+          'Accept': 'application/vnd.github+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ event_type: 'new_lead', client_payload: payload })
+      });
+      const m = document.getElementById('submitMsg');
+      if (r.status === 204) {
+        m.className = 'msg ok';
+        m.textContent = '已推送! GitHub Actions 正在跑, 约 10-30 秒后飞书会收到通知';
+        ['name','company','email','country','part','message'].forEach(id => document.getElementById(id).value='');
+      } else {
+        m.className = 'msg err';
+        m.textContent = '失败: HTTP ' + r.status + ' ' + await r.text();
+      }
+    } catch (e) {
+      const m = document.getElementById('submitMsg');
+      m.className = 'msg err'; m.textContent = '网络错误: ' + e.message;
+    } finally {
+      btn.disabled = false; btn.textContent = '提交询盘';
+    }
+  };
+
+  // 读取 leads.csv 展示
+  async function loadLeads() {
+    const s = getSettings();
+    const box = document.getElementById('leadsTable');
+    if (!s.owner || !s.repo) { box.innerHTML = '<div class="hint">先填仓库设置</div>'; return; }
+    box.innerHTML = '<div class="hint">加载中...</div>';
+    try {
+      const r = await fetch(`https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/data/leads.csv`);
+      if (!r.ok) { box.innerHTML = '<div class="hint">还没有线索记录 (HTTP '+r.status+')</div>'; return; }
+      const txt = await r.text();
+      const lines = txt.trim().split('\n').filter(l => l.trim());
+      if (lines.length <= 1) { box.innerHTML = '<div class="hint">线索池为空</div>'; return; }
+      const header = lines[0].split(',');
+      let html = '<table><tr>' + header.map(h=>`<th>${h}</th>`).join('') + '</tr>';
+      for (let i = lines.length-1; i >= 1 && i >= lines.length-20; i--) {
+        const cols = lines[i].split(',');
+        html += '<tr>' + cols.map(c=>`<td>${c}</td>`).join('') + '</tr>';
+      }
+      html += '</table>';
+      box.innerHTML = html;
+    } catch (e) {
+      box.innerHTML = '<div class="hint">读取失败: ' + e.message + '</div>';
+    }
+  }
+</script>
+</body>
+</html>
