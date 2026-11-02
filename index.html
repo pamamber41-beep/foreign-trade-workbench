@@ -3,194 +3,1098 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>外贸询盘工作台</title>
+<title>元器件外贸助手</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231677ff'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'%3E%E5%A4%96%3C/text%3E%3C/svg%3E">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-         background: #f5f6f8; color: #222; padding: 24px; max-width: 900px; margin: 0 auto; }
-  h1 { font-size: 22px; margin-bottom: 4px; }
-  .sub { color: #888; font-size: 13px; margin-bottom: 20px; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-  .tab { padding: 8px 16px; background: #fff; border-radius: 6px; cursor: pointer;
-         border: 1px solid #e2e4e8; font-size: 14px; }
-  .tab.active { background: #2f6fed; color: #fff; border-color: #2f6fed; }
-  .card { background: #fff; border-radius: 8px; padding: 20px; border: 1px solid #e2e4e8; }
-  label { display: block; font-size: 13px; color: #555; margin: 12px 0 4px; }
-  input, textarea { width: 100%; padding: 8px 10px; border: 1px solid #d0d3d9;
-                    border-radius: 5px; font-size: 14px; font-family: inherit; }
-  textarea { min-height: 80px; resize: vertical; }
-  button { margin-top: 16px; padding: 10px 20px; background: #2f6fed; color: #fff;
-           border: none; border-radius: 5px; font-size: 14px; cursor: pointer; }
-  button:hover { background: #2458c4; }
-  button:disabled { background: #a8b8d8; cursor: not-allowed; }
-  .msg { margin-top: 12px; padding: 10px; border-radius: 5px; font-size: 13px; display: none; }
-  .msg.ok { background: #e6f4ea; color: #1e7e34; display: block; }
-  .msg.err { background: #fdecea; color: #c0392b; display: block; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
-  th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
-  th { background: #fafbfc; color: #666; font-weight: 500; }
-  .hint { font-size: 12px; color: #999; margin-top: 6px; line-height: 1.6; }
-  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#f0f2f5;padding:24px 14px;color:#333;font-size:14px;line-height:1.6}
+.container{max-width:900px;margin:0 auto}
+.header{background:#fff;padding:24px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:20px}
+h1{font-size:20px;margin-bottom:4px;color:#1a1a1a}
+.subtitle{font-size:13px;color:#888}
+.nav-chips{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+.nav-chips a{font-size:12px;color:#1677ff;background:#f0f7ff;border:1px solid #d6e8ff;border-radius:12px;padding:3px 10px;text-decoration:none}
+.card-box{background:#fff;padding:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:20px;scroll-margin-top:14px}
+.sec-title{font-size:15px;margin-bottom:14px;color:#555;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sec-no{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:6px;background:#1677ff;color:#fff;font-size:12px;font-weight:600}
+input[type=text],input[type=number]{padding:10px 12px;font-size:16px;border:1.5px solid #d9d9d9;border-radius:8px;outline:none;width:100%;min-width:0;background:#fff}
+input:focus{border-color:#1677ff}
+.btn-group{display:flex;gap:10px;flex-wrap:wrap}
+button{padding:10px 18px;border:none;border-radius:8px;font-size:14px;cursor:pointer;transition:all .2s;font-weight:500}
+.btn-primary{background:#1677ff;color:#fff}
+.btn-primary:hover{background:#4096ff}
+.btn-secondary{background:#f5f5f5;color:#333}
+.btn-secondary:hover{background:#e8e8e8}
+.tip{margin-top:12px;font-size:12px;color:#999;line-height:1.6}
+.group-title{font-size:13px;font-weight:600;color:#555;margin:18px 0 10px;padding-left:8px;border-left:3px solid #1677ff}
+.group-title.first{margin-top:0}
+/* ===== 工作台布局 ===== */
+.workbench{display:flex;min-height:100vh}
+.sidebar{width:230px;background:#f5f6f8;border-right:1px solid #e8eaed;position:fixed;top:0;bottom:0;left:0;padding:18px 12px;overflow-y:auto}
+.sidebar .logo{display:flex;gap:10px;align-items:center;padding:4px 8px 16px}
+.logo-block{width:36px;height:36px;border-radius:9px;background:#1677ff;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex:none}
+.logo-name{font-weight:700;font-size:14px;color:#1a1a1a}
+.logo-sub{font-size:11px;color:#999}
+.nav-group{font-size:11px;color:#999;padding:14px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;font-size:13px;color:#444;cursor:pointer;margin-bottom:2px;min-width:0}
+.nav-item:hover{background:#eceef1}
+.nav-item.active{background:#fff;color:#1677ff;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08);border-left:3px solid #1677ff;padding-left:7px}
+.main{margin-left:230px;flex:1;padding:26px 28px 40px;min-width:0}
+.main-head h1{font-size:22px;font-weight:700;color:#1a1a1a}
+.main-head p{font-size:13px;color:#999;margin-top:4px}
+.view{display:none}
+.view.active{display:block}
+.placeholder{background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:48px 20px;text-align:center;color:#999;font-size:14px}
+.vocab-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.vocab-toolbar select,.vocab-toolbar input{padding:10px 12px;font-size:16px;border:1.5px solid #d9d9d9;border-radius:8px;outline:none;background:#fff}
+.vocab-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:640px){.vocab-grid{grid-template-columns:1fr 1fr}}
+.vocab-card{background:#fff;border:1px solid #f0f0f0;border-radius:8px;padding:14px}
+.vocab-name{font-weight:700;font-size:14px;color:#1a1a1a}
+.vocab-en{font-size:12px;color:#999;margin-top:2px}
+.vocab-desc{font-size:12px;color:#666;line-height:1.6;margin-top:8px}
+.vocab-tag{display:inline-block;margin-top:10px;font-size:11px;padding:2px 8px;border-radius:4px;background:#e6f4ff;color:#1677ff}
+.daily-word{background:#f0f7ff;border:1px solid #bae0ff;padding:16px 18px}
+.daily-word .dw-label{font-size:11px;color:#1677ff;font-weight:600;letter-spacing:1px}
+.daily-word .dw-name{font-size:18px;font-weight:700;color:#1a1a1a;margin:4px 0}
+.daily-word .dw-en{font-size:12px;color:#999}
+.daily-word .dw-desc{font-size:13px;color:#555;margin:8px 0}
+.vocab-tabs{display:flex;gap:8px;margin:14px 0 14px}
+.tab-btn{padding:7px 16px;font-size:13px;border-radius:8px;border:1px solid #d9d9d9;background:#fff;color:#555;cursor:pointer}
+.tab-btn.active{background:#1677ff;color:#fff;border-color:#1677ff}
+.vocab-save{margin-top:10px;font-size:12px;padding:4px 10px;border-radius:6px;border:1px solid #1677ff;background:#fff;color:#1677ff;cursor:pointer}
+.vocab-save.saved{background:#e6f4ff;color:#0958d9;border-color:#91caff}
+.vocab-del{margin-top:10px;font-size:12px;padding:4px 10px;border-radius:6px;border:1px solid #ffccc7;background:#fff;color:#cf1322;cursor:pointer}
+.mine-thumb{width:100%;max-height:120px;object-fit:cover;border-radius:6px;margin-top:8px}
+.main-footer{margin-top:28px;font-size:12px;color:#bbb}
+@media(max-width:767px){
+  .workbench{flex-direction:column}
+  .sidebar{position:static;width:100%;display:block;border-right:none;border-bottom:1px solid #e8eaed;padding:12px}
+  .sidebar .logo{padding:0 0 10px}
+  .nav-group{display:none}
+  .nav-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+  .nav-item{white-space:nowrap;margin-bottom:0;flex:none}
+  .main{margin-left:0;padding:18px 14px 30px}
+}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:560px){.grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}}
+.card{padding:14px;border:1px solid #f0f0f0;border-radius:8px;transition:all .2s;cursor:pointer;min-width:0}
+.card:hover{border-color:#1677ff;background:#f9fbff}
+.card-name{font-weight:600;font-size:14px;margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.card-desc{font-size:12px;color:#888;line-height:1.5}
+.tag{font-size:11px;padding:2px 6px;border-radius:4px;font-weight:normal;white-space:nowrap}
+.tag-auto{background:#e6f4ff;color:#1677ff}
+.tag-home{background:#fff7e6;color:#fa8c16}
+.tag-isl{background:#f6ffed;color:#52c41a}
+.warning{margin-top:16px;padding:10px 14px;background:#fff2f0;border-radius:6px;font-size:12px;color:#cf1322;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+.warning svg{flex:none;margin-top:2px}
+/* FX */
+.fx-main{display:flex;flex-direction:column;gap:6px}
+.fx-rate{font-size:26px;font-weight:700;color:#1677ff;font-variant-numeric:tabular-nums}
+.fx-meta{font-size:12px;color:#888;line-height:1.6;word-break:break-all}
+.fx-loading{font-size:13px;color:#999}
+.manual-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.manual-row input{width:150px;flex:none}
+/* quote form */
+.q-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:640px){.q-grid{grid-template-columns:1fr 1fr}}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:12px;color:#888}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.preset{padding:5px 12px;font-size:12px;background:#e6f4ff;color:#1677ff}
+.preset:hover{background:#bae0ff}
+.out-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+@media(min-width:640px){.out-grid{grid-template-columns:repeat(5,1fr)}}
+.out-tile{background:#f9fbff;border:1px solid #e6f4ff;border-radius:8px;padding:12px;min-width:0}
+.out-label{font-size:12px;color:#888}
+.out-val{font-size:20px;font-weight:700;color:#1677ff;font-variant-numeric:tabular-nums;margin-top:2px}
+.out-val small{font-size:12px;font-weight:400;color:#999}
+.notes{margin-top:16px;border-top:1px dashed #f0f0f0;padding-top:12px;font-size:12px;color:#777;line-height:1.8}
+.notes b{color:#555;font-weight:600}
+/* country module */
+.summary-bar{background:#fffbe6;border:1px solid #ffe58f;border-radius:8px;padding:10px 12px;font-size:13px;margin-top:12px;line-height:1.5}
+.chip{display:inline-block;background:#fff;border:1px solid #ffd591;color:#d46b08;border-radius:10px;padding:2px 9px;font-size:12px;margin:3px 4px 0 0;cursor:pointer}
+.chip:hover{background:#fff2e8}
+.country-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:600px){.country-grid{grid-template-columns:1fr 1fr}}
+.ccard{padding:14px;border:1px solid #f0f0f0;border-radius:8px;min-width:0}
+.ccard.today-holiday{border:1.5px solid #fa8c16;background:#fffbf5}
+.ccard.flash{animation:flashBg 1.2s ease}
+@keyframes flashBg{0%{background:#fff1b8}100%{background:#fff}}
+.ccard.today-holiday.flash{animation:none}
+.ccard-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;min-width:0}
+.ccard-name{font-weight:600;font-size:14px;color:#1a1a1a}
+.ccard-en{font-size:12px;color:#999;word-break:break-word}
+.ccard-code{font-size:11px;background:#f5f5f5;color:#666;border-radius:4px;padding:1px 6px;white-space:nowrap}
+.ccard-tz{font-size:11px;color:#aaa}
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.b-holiday{background:#fff2e8;color:#d4380d;font-weight:600}
+.b-weekend{background:#e6f4ff;color:#1677ff}
+.b-fri{background:#fff7e6;color:#fa8c16}
+.b-ramadan{background:#f9f0ff;color:#722ed1}
+.b-local{background:#f5f5f5;color:#666}
+.holiday-list{margin:8px 0;font-size:12px;max-height:none}
+.h-row{display:flex;gap:8px;padding:3px 0;border-top:1px dashed #f0f0f0;align-items:baseline}
+.h-date{color:#888;white-space:nowrap;font-variant-numeric:tabular-nums;flex:none}
+.h-name{min-width:0;word-break:break-word;flex:1}
+.h-note{color:#aaa;display:block;font-size:11px}
+.cult{margin-top:8px;border-top:1px solid #f0f0f0;padding-top:8px}
+.cult-row{font-size:12px;line-height:1.6;margin-bottom:4px;min-width:0;color:#555}
+.cult-row b{color:#888;font-weight:500}
+.ccard-src{font-size:11px;color:#bbb;margin-top:6px;word-break:break-all}
+.filter-wrap{margin-top:12px}
+.footer-note{font-size:12px;color:#999;line-height:1.8;background:#fff;padding:16px 20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+/* ===== 平台列表（表格化） ===== */
+.pn-list{width:100%;border-collapse:collapse;background:#fff;border-radius:8px;overflow:hidden;font-size:13px}
+.pn-list th{background:#fafbfc;color:#666;font-weight:500;text-align:left;padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:12px}
+.pn-list td{padding:10px 12px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+.pn-list tr:hover td{background:#f9fbff}
+.pn-list .pname{font-weight:600;color:#1a1a1a;white-space:nowrap}
+.pn-list .pdesc{color:#888;font-size:12px;line-height:1.5}
+.pn-list .popen{color:#1677ff;cursor:pointer;white-space:nowrap;font-size:12px}
+.pn-list .popen:hover{text-decoration:underline}
+.pn-list input[type=checkbox]{width:16px;height:16px;cursor:pointer}
+/* ===== 查询历史 ===== */
+.history-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 10px;align-items:center}
+.history-toolbar input{flex:1;min-width:180px;padding:8px 12px}
+.hist-table{width:100%;border-collapse:collapse;background:#fff;font-size:13px}
+.hist-table th{background:#fafbfc;color:#666;font-weight:500;text-align:left;padding:8px 10px;border-bottom:1px solid #f0f0f0;font-size:12px}
+.hist-table td{padding:8px 10px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+.hist-table tr:hover td{background:#f9fbff}
+.hist-pn{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:600;color:#1677ff;cursor:pointer}
+.hist-pn:hover{text-decoration:underline}
+.hist-actions button{padding:4px 10px;font-size:12px;margin-right:4px}
+.bulk-box{width:100%;min-height:80px;padding:10px 12px;border:1.5px dashed #d9d9d9;border-radius:8px;font-size:13px;font-family:ui-monospace,monospace;resize:vertical}
+.bulk-box:focus{border-color:#1677ff;outline:none}
+
 </style>
 </head>
 <body>
-  <h1>外贸询盘工作台</h1>
-  <div class="sub">点一下就把询盘推进 GitHub Actions → 自动清洗 → 写进 leads.csv → 飞书通知你</div>
+<div class="workbench">
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-block">A</div>
+    <div><div class="logo-name">Amber 的工作台</div><div class="logo-sub">外贸业务管理系统</div></div>
+  </div>
+  <div class="nav-scroll">
+  <div class="nav-item active" data-view="vocab"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>专业词汇及基础知识</div>
+  <div class="nav-group">实用工具</div>
+  <div class="nav-item" data-view="pn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 4v16M15 4v16M4 9h16M4 15h16"/></svg>元器件查价</div>
+  <div class="nav-item" data-view="quote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg>报价助手</div>
+  <div class="nav-item" data-view="holiday"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>世界时间及节日提醒</div>
+  <div class="nav-item" data-view="news"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-3h4"/><path d="M18 14h-8M18 18h-8M10 6H8v4h2V6zm4 0h-2v4h2V6z"/></svg>行业资讯</div>
+  <div class="nav-item" data-view="expo"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M9 13h1M9 17h1M14 9h1M14 13h1M14 17h1"/></svg>展会资讯</div>
+  <div class="nav-group">系统</div>
+  <div class="nav-item" data-view="settings"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>设置</div>
+  </div>
+</aside>
+<main class="main">
+  <div class="main-head"><h1 id="view-title">专业词汇及基础知识</h1><p id="view-sub">积累外贸专业词汇，夯实业务基础</p></div>
 
-  <div class="tabs">
-    <div class="tab active" data-tab="submit">录入询盘</div>
-    <div class="tab" data-tab="leads">最近线索</div>
-    <div class="tab" data-tab="settings">仓库设置</div>
+  <section class="view active" id="view-vocab">
+    <div class="daily-word card-box" id="daily-word-box"></div>
+    <div class="vocab-toolbar">
+      <select id="vocab-cat"><option>全分类</option></select>
+      <input type="text" id="vocab-search" placeholder="搜索本地库 + 我的保存…">
+      <button class="btn-secondary" onclick="bingSearch()">在必应搜索</button>
+      <button class="btn-primary" onclick="saveNewWord()">保存到新增知识点</button>
+    </div>
+    <div class="vocab-tabs">
+      <button class="tab-btn active" data-tab="browse">本地知识点</button>
+      <button class="tab-btn" data-tab="mine">新增知识点（<span id="mine-count">0</span>）</button>
+    </div>
+    <div id="vocab-pane-browse">
+      <div class="vocab-grid" id="vocab-grid"></div>
+    </div>
+    <div id="vocab-pane-mine" style="display:none">
+      <div class="vocab-grid" id="mine-grid"></div>
+      <div class="tip" id="mine-empty" style="display:none">还没有手动保存的词条，在「本地知识点」里点击卡片上的【保存到我的知识点库】即可收入。</div>
+    </div>
+    <div class="card-box" id="brand-section">
+      <div class="sec-title">行业品牌（海外被动器件厂商）</div>
+      <div class="vocab-grid" id="brand-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== 视图：元器件查价 ===== -->
+  <section class="view" id="view-pn">
+  <div class="card-box" id="mod-pn">
+    <div class="sec-title"><span class="sec-no">0</span>料号一站查询</div>
+    <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <input type="text" id="pn-input" placeholder="输入料号，例如：FNR8065S103MT" style="flex:1;min-width:200px" onkeydown="if(event.key==='Enter')openAll()">
+    </div>
+    <div class="btn-group">
+      <button class="btn-primary" onclick="openAll()">一键打开全部平台</button>
+      <button class="btn-secondary" onclick="openSelected()">只打开勾选的</button>
+      <button class="btn-secondary" onclick="copyPN()">复制料号</button>
+      <button class="btn-secondary" onclick="saveCurrentPN()">⭐ 存入历史</button>
+    </div>
+    <div class="tip">第一次使用浏览器可能会拦截弹窗，记得在地址栏右边允许弹出窗口。</div>
+
+    <div class="group-title" style="margin-top:18px">批量 BOM 查询（粘贴多行料号）</div>
+    <textarea class="bulk-box" id="pn-bulk" placeholder="每行一个料号，例如：&#10;FNR8065S103MT&#10;LMK107BJ106MM-T&#10;GRM188R71H104KA93D"></textarea>
+    <div class="btn-group" style="margin-top:8px">
+      <button class="btn-primary" onclick="bulkQuery()">批量打开前 5 个料号</button>
+      <button class="btn-secondary" onclick="bulkSave()">批量存入历史</button>
+    </div>
   </div>
 
-  <div class="card" id="p-submit">
-    <div class="row">
-      <div><label>客户姓名</label><input id="name" placeholder="John"></div>
-      <div><label>公司</label><input id="company" placeholder="Acme Electronics"></div>
+  <div class="card-box" style="margin-top:16px">
+    <div class="sec-title" style="margin-bottom:10px">平台列表（勾选后批量打开，点名称单独打开）</div>
+    <table class="pn-list" id="platform-table">
+      <thead><tr><th style="width:30px"></th><th>平台</th><th>用途说明</th><th style="width:70px">类型</th><th style="width:60px">操作</th></tr></thead>
+      <tbody id="platform-tbody"></tbody>
+    </table>
+    <div class="warning">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="#cf1322"><path d="M12 2L1 21h22L12 2zm0 6l7.5 13h-15L12 8zm-1 4v4h2v-4h-2zm0 5v2h2v-2h-2z"/></svg>
+      <span>findchips 域名是 findchips.com（带 s），注意辨别真假站点，防止钓鱼。</span>
     </div>
-    <div class="row">
-      <div><label>邮箱</label><input id="email" placeholder="john@acme.com"></div>
-      <div><label>国家</label><input id="country" placeholder="USA"></div>
-    </div>
-    <label>目标型号 / 需求</label>
-    <input id="part" placeholder="如: 10uH 功率电感, 5000pcs">
-    <label>询盘内容</label>
-    <textarea id="message" placeholder="客户原话, 可空"></textarea>
-    <button id="submitBtn">提交询盘</button>
-    <div class="msg" id="submitMsg"></div>
   </div>
 
-  <div class="card" id="p-leads" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <strong>线索池 (data/leads.csv)</strong>
-      <button onclick="loadLeads()" style="margin:0;padding:6px 12px">刷新</button>
+  <div class="card-box" style="margin-top:16px">
+    <div class="sec-title">查询历史</div>
+    <div class="history-toolbar">
+      <input type="text" id="hist-search" placeholder="搜索料号 / 备注…" oninput="renderHistory()">
+      <button class="btn-secondary" onclick="exportCSV()">导出 CSV</button>
+      <button class="btn-secondary" onclick="pushAllToSheets()">推送到 Google Sheets</button>
+      <button class="btn-secondary" onclick="clearHistory()">清空</button>
     </div>
-    <div id="leadsTable"><div class="hint">点击刷新读取最新线索。首次使用前请先在"仓库设置"里填好仓库信息。</div></div>
+    <div style="overflow-x:auto">
+      <table class="hist-table" id="hist-table">
+        <thead><tr><th>时间</th><th>料号</th><th>备注</th><th style="width:160px">操作</th></tr></thead>
+        <tbody id="hist-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  </section>
+
+  <!-- ===== 视图：报价助手（汇率+换算） ===== -->
+  <section class="view" id="view-quote">
+  <div class="card-box" id="mod-fx">
+    <div class="sec-title"><span class="sec-no">1</span>今日汇率（USD / CNY）</div>
+    <div class="fx-loading" id="fx-status">正在抓取实时汇率…</div>
+    <div class="fx-main" id="fx-main" style="display:none">
+      <div class="fx-rate">1 USD = <span id="fx-rate">--</span> CNY</div>
+      <div class="fx-meta" id="fx-meta"></div>
+    </div>
+    <div class="warning" id="fx-fallback" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="#cf1322"><path d="M12 2L1 21h22L12 2zm0 6l7.5 13h-15L12 8zm-1 4v4h2v-4h-2zm0 5v2h2v-2h-2z"/></svg>
+      <span id="fx-fallback-text">实时汇率抓取失败，请在下方手动输入银行现汇买入价。</span>
+    </div>
+    <div class="manual-row">
+      <input type="number" id="fx-manual" step="0.0001" placeholder="手动输入汇率">
+      <button class="btn-secondary" onclick="applyManualFX()">使用此汇率</button>
+    </div>
+    <div class="tip">参考价为中间汇价，银行现汇买入价略有差异，报价时以实际银行牌价为准。抓取成功后会自动预填到下方报价换算的「银行现汇买入价」。</div>
   </div>
 
-  <div class="card" id="p-settings" style="display:none">
-    <label>GitHub 用户名 (owner)</label>
-    <input id="owner" placeholder="你的GitHub账号名">
-    <label>仓库名 (repo)</label>
-    <input id="repo" placeholder="foreign-trade-workbench">
-    <label>Personal Access Token (PAT, 需要 repo 权限)</label>
-    <input id="token" type="password" placeholder="ghp_xxxxxxxx">
-    <div class="hint">
-      1. 打开 https://github.com/settings/tokens?type=beta  → Generate new token<br>
-      2. 权限只勾: Contents (读写) + Actions (读写) + Workflows (读写)<br>
-      3. Token 只存在你自己浏览器 localStorage, 不上传到任何地方
+  <!-- ===== 模块二：报价换算 ===== -->
+  <div class="card-box" id="mod-quote">
+    <div class="sec-title"><span class="sec-no">2</span>报价换算（人民币 → 美元 EXW / FOB）</div>
+    <div class="q-grid">
+      <div class="field"><label>人民币含税采购成本（¥）</label><input type="number" id="q-cost" value="0" step="0.01"></div>
+      <div class="field">
+        <label>报价折扣（采购指导价折率）</label>
+        <input type="number" id="q-discount" value="0.9" step="0.01">
+        <div class="preset-row">
+          <button class="btn-secondary preset" onclick="setDiscount(1.0)">1.0</button>
+          <button class="btn-secondary preset" onclick="setDiscount(0.9)">0.9</button>
+          <button class="btn-secondary preset" onclick="setDiscount(0.88)">0.88</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>损耗系数（%）</label>
+        <input type="number" id="q-loss" value="2" step="0.1">
+        <div class="preset-row">
+          <button class="btn-secondary preset" onclick="setLoss(5)">样品单 5%</button>
+          <button class="btn-secondary preset" onclick="setLoss(2)">整盘大货 2%</button>
+        </div>
+      </div>
+      <div class="field"><label>杂费（¥）</label><input type="number" id="q-misc" value="0" step="0.01"></div>
+      <div class="field"><label>银行现汇买入价（CNY/USD）</label><input type="number" id="q-rate" value="6.5" step="0.0001"></div>
+      <div class="field"><label>报关费（¥）</label><input type="number" id="q-customs" value="0" step="0.01"></div>
+      <div class="field"><label>内陆运费（¥）</label><input type="number" id="q-inland" value="0" step="0.01"></div>
+      <div class="field"><label>港口 / 码头杂费（¥）</label><input type="number" id="q-port" value="0" step="0.01"></div>
+      <div class="field"><label>安全垫（CNY/USD，扣除买入价）</label><input type="number" id="q-margin" value="0.20" step="0.01"></div>
     </div>
-    <button onclick="saveSettings()">保存设置</button>
-    <div class="msg" id="setMsg"></div>
+    <div class="out-grid">
+      <div class="out-tile"><div class="out-label">折后人民币价</div><div class="out-val" id="o-disc">--<small> CNY</small></div></div>
+      <div class="out-tile"><div class="out-label">核算安全汇率</div><div class="out-val" id="o-safe">--<small> CNY/USD</small></div></div>
+      <div class="out-tile"><div class="out-label">EXW 美元价</div><div class="out-val" id="o-exw">--<small> USD</small></div></div>
+      <div class="out-tile"><div class="out-label">国内段费用</div><div class="out-val" id="o-dom">--<small> USD</small></div></div>
+      <div class="out-tile"><div class="out-label">FOB 美元价</div><div class="out-val" id="o-fob">--<small> USD</small></div></div>
+    </div>
+    <div class="notes">
+      <div><b>公式：</b>折后人民币价 = 人民币含税成本 × 报价折扣；核算安全汇率 = 银行现汇买入价 − 安全垫；EXW =（折后人民币价 ×(1+损耗%) + 杂费）÷ 安全汇率；FOB = EXW +（报关费+内陆运费+港口杂费）÷ 安全汇率。</div>
+      <div><b>报价折扣：</b>对内采购指导价折率，常见 0.9 / 0.88；折扣率仅影响本次报价换算的成本基数，不改变授权与合规口径。</div>
+      <div><b>报价口径：</b>银行手续费 USD 25/笔由买方承担；报价有效期 10 天。</div>
+      <div><b>合规口径：</b>第三方品牌（顺络/村田/TDK/太诱/长晶/LRC/艾为/国巨/风华/三环/三星）只写 "sourced from authorized domestic channels in mainland China, no official overseas authorization"，严禁写 Authorized Distributor；自有品牌 CJIANG（长江微电）可写 "supplied under global authorized distribution"。</div>
+      <div><b>收款主体：</b>HK FOXTRON INTERNATIONAL LIMITED / HSBC Hong Kong / A/C 801-386954-838 / SWIFT HSBCHKHHHKH。</div>
+      <div><b>样品政策：</b>免费样品不走收汇，运费到付。</div>
+    </div>
+  </div>
+  </section>
+
+  <!-- ===== 视图：世界时间及节日提醒 ===== -->
+  <section class="view" id="view-holiday">
+  <div class="card-box" id="mod-holiday">
+    <div class="sec-title"><span class="sec-no">4</span>全球节假日与文化速查（38 国）</div>
+    <div class="filter-wrap"><input type="text" id="country-filter" placeholder="按中文名 / 英文名 / 国家码过滤，如：韩国 / Korea / KR"></div>
+    <div class="summary-bar" id="holiday-summary"></div>
+    <div class="country-grid" id="country-grid"></div>
   </div>
 
-<script>
-  // Tab 切换
-  document.querySelectorAll('.tab').forEach(t => {
-    t.onclick = () => {
-      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-      t.classList.add('active');
-      ['submit','leads','settings'].forEach(k => {
-        document.getElementById('p-'+k).style.display = k===t.dataset.tab ? 'block' : 'none';
-      });
-      if (t.dataset.tab === 'leads') loadLeads();
-    };
+  <div class="footer-note">
+    数据口径：节假日日期以各国政府 / 权威日历 2026 年公告为准；伊斯兰历每年提前约 11 天，斋月以官方月相观测公布为准（本页斋月窗口按 2026-02-18 ~ 2026-03-19 预置）。文化与礼仪信息为商务速查整理，实际交往以当地最新习俗为准。
+  </div>
+  </section>
+
+  <!-- ===== 视图：行业资讯 ===== -->
+  <section class="view" id="view-news">
+    <div class="card-box">
+      <div class="sec-title">新增资讯</div>
+      <div class="q-grid" style="grid-template-columns:1fr 1fr">
+        <div class="field"><label>标题</label><input type="text" id="news-title" placeholder="资讯标题"></div>
+        <div class="field"><label>来源链接</label><input type="text" id="news-url" placeholder="https://…"></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label>摘要</label><input type="text" id="news-summary" placeholder="一句话摘要"></div>
+      <div class="btn-group" style="margin-top:12px"><button class="btn-primary" onclick="newsAdd()">添加资讯</button></div>
+    </div>
+    <div class="vocab-grid" id="news-grid" style="margin-top:14px"></div>
+  </section>
+
+  <!-- ===== 视图：展会资讯 ===== -->
+  <section class="view" id="view-expo">
+    <div class="card-box">
+      <div class="sec-title">新增展会提醒</div>
+      <div class="q-grid" style="grid-template-columns:1fr 1fr">
+        <div class="field"><label>展会名称</label><input type="text" id="expo-title" placeholder="如：CES 2027"></div>
+        <div class="field"><label>会期 / 地点</label><input type="text" id="expo-date" placeholder="如：2027.1.6-9，拉斯维加斯"></div>
+      </div>
+      <div class="field" style="margin-top:10px"><label>官网链接</label><input type="text" id="expo-url" placeholder="https://…"></div>
+      <div class="btn-group" style="margin-top:12px"><button class="btn-primary" onclick="expoAdd()">添加展会</button></div>
+    </div>
+    <div class="vocab-grid" id="expo-grid" style="margin-top:14px"></div>
+  </section>
+
+  <!-- ===== 视图：设置 ===== -->
+  <section class="view" id="view-settings">
+    <div class="card-box">
+      <div class="sec-title">Google Sheets 同步</div>
+      <div class="field">
+        <label>Google Apps Script Web App URL</label>
+        <input type="text" id="gs-url" placeholder="https://script.google.com/macros/s/XXXX/exec">
+      </div>
+      <div class="tip" style="margin-top:10px">
+        <b>怎么拿到这个 URL：</b><br>
+        1. 打开你的 Google Sheet → 扩展程序 → Apps Script<br>
+        2. 把我给你的 <code>google-apps-script.gs</code> 代码粘贴进去 → 保存 → 部署为 Web App<br>
+        3. 执行权限选"任何人"，复制 /exec 结尾的 URL 粘到这里<br>
+        4. 点"测试连接"，Sheet 里会出现一行测试数据就说明通了
+      </div>
+      <div class="btn-group" style="margin-top:12px">
+        <button class="btn-primary" onclick="saveGSSettings()">保存</button>
+        <button class="btn-secondary" onclick="testGS()">测试连接</button>
+      </div>
+      <div class="msg" id="gs-msg" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card-box" style="margin-top:16px">
+      <div class="sec-title">数据说明</div>
+      <div class="notes">
+        <div>所有查询历史、词汇、资讯默认存在你自己浏览器的 localStorage，不上传任何服务器。</div>
+        <div>点"推送到 Google Sheets"才会把历史记录 POST 到你自己部署的 Apps Script，数据落在你自己的 Google Sheet 里。</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="main-footer">© 2026 Amber Workbench · v1.0</div>
+</main>
+</div>
+
+<script>/* ========== 模块〇：料号查询（原逻辑沿用） ========== */
+const platforms = [
+  // 国内现货与行情
+  { name:"立创商城", desc:"查SPQ最小包装量", searchUrl:"https://so.szlcsc.com/global.html?k={pn}", site:"https://www.szlcsc.com", status:"auto", checked:true, group:0 },
+  { name:"云汉芯城", desc:"快速参考价，低价RFQ预审", searchUrl:"https://www.ickey.cn/search?keyword={pn}", site:"https://www.ickey.cn", status:"auto", checked:true, group:0 },
+  { name:"华强电子网 HQEW", desc:"国内现货大盘，查现货行情、找货源，对比海外价做报价方案", searchUrl:"https://s.hqew.com/search?q={pn}", site:"https://www.hqew.com", status:"auto", checked:false, group:0 },
+  { name:"芯查查", desc:"查品牌归属、企业收购关系", searchUrl:"https://www.xcc.com/", site:"https://www.xcc.com", status:"home", checked:false, group:0 },
+  { name:"正能量电子网", desc:"参考市场行情价，夜间紧急询盘", searchUrl:"https://www.bom.ai/global/", site:"https://www.bom.ai", status:"home", checked:false, group:0 },
+  // 海外聚合比价
+  { name:"Findchips", desc:"多平台聚合比价，核验目标价", searchUrl:"https://www.findchips.com/search/{pn}", site:"https://www.findchips.com", status:"auto", checked:true, group:1 },
+  { name:"Octopart", desc:"海外元器件聚合搜索，查型号/价格/库存/datasheet，海外客户报价高频", searchUrl:"https://octopart.com/search?q={pn}", site:"https://octopart.com", status:"auto", checked:true, group:1 },
+  { name:"netCOMPONENTS", desc:"全球供应商数据库，按地区筛供应商、看现货库存，直接发RFQ，找稀缺料", searchUrl:"https://www.netcomponents.com/search?searchTerm={pn}", site:"https://www.netcomponents.com", status:"auto", checked:false, group:1 },
+  { name:"Sourcengine", desc:"BOM大批量询价，看全球报价与交期，OEM/EMS客户开发好用", searchUrl:"https://www.sourcengine.com/search?q={pn}", site:"https://www.sourcengine.com", status:"auto", checked:false, group:1 },
+  // 国际授权分销
+  { name:"DigiKey 得捷", desc:"查期货交期，报期货价前确认", searchUrl:"https://www.digikey.cn/zh/products?keywords={pn}", site:"https://www.digikey.cn", status:"auto", checked:false, group:2 },
+  { name:"贸泽 Mouser", desc:"查最小包装、元件重量，估算运费", searchUrl:"https://www.mouser.cn/Search/Refine?Keyword={pn}", site:"https://www.mouser.cn", status:"auto", checked:false, group:2 },
+  { name:"Arrow 艾睿", desc:"国际大型授权分销商，查原厂料号/交期/规格，报正规渠道期货价", searchUrl:"https://www.arrow.com/en/products/search?qs={pn}", site:"https://www.arrow.com", status:"auto", checked:false, group:2 },
+  { name:"Avnet 安富利", desc:"国际授权分销巨头，原厂资源齐全，查长交期料/工业级料/技术资料", searchUrl:"https://avnetexpress.avnet.com/store/em/EMController/searchResults?Ntt={pn}", site:"https://www.avnet.com", status:"auto", checked:false, group:2 },
+  { name:"Element14 e络盟", desc:"安富利旗下海外分销商，查样品/小批量价格/交期，小单RFQ参考", searchUrl:"https://www.element14.com/search?searchTerm={pn}", site:"https://www.element14.com", status:"auto", checked:false, group:2 }
+];
+const platformGroups = [
+  { title:"国内现货与行情" },
+  { title:"海外聚合比价" },
+  { title:"国际授权分销" }
+];
+function renderPlatforms(){
+  const tbody=document.getElementById('platform-tbody');
+  tbody.innerHTML='';
+  platformGroups.forEach((g,gi)=>{
+    // 分组标题行
+    const gr=document.createElement('tr');
+    gr.innerHTML='<td colspan="5" style="background:#f5f6f8;font-weight:600;color:#555;font-size:12px;padding:8px 12px">'+g.title+'</td>';
+    tbody.appendChild(gr);
+    platforms.forEach((p,i)=>{
+      if(p.group!==gi) return;
+      const tr=document.createElement('tr');
+      tr.innerHTML=
+        '<td><input type="checkbox" id="chk-'+i+'" '+(p.checked?'checked':'')+'></td>'+
+        '<td class="pname">'+p.name+'</td>'+
+        '<td class="pdesc">'+p.desc+'</td>'+
+        '<td><span class="tag '+(p.status==='auto'?'tag-auto':'tag-home')+'">'+(p.status==='auto'?'直搜':'首页')+'</span></td>'+
+        '<td class="hist-actions"><button class="btn-secondary" onclick="openSingle('+i+')">打开</button></td>';
+      tbody.appendChild(tr);
+    });
   });
+}
+function getPN(){
+  const pn=document.getElementById('pn-input').value.trim();
+  if(!pn){ alert('请先输入料号'); return null; }
+  return pn;
+}
+function buildUrl(p,pn){ return p.searchUrl.replace('{pn}',encodeURIComponent(pn)); }
+function openSingle(i){ const pn=getPN(); if(!pn) return; window.open(buildUrl(platforms[i],pn),'_blank'); }
+function openAll(){
+  const pn=getPN(); if(!pn) return;
+  platforms.forEach(p=>window.open(buildUrl(p,pn),'_blank'));
+  addHistory(pn,'openAll');
+}
+function openSelected(){
+  const pn=getPN(); if(!pn) return;
+  platforms.forEach((p,i)=>{ if(document.getElementById('chk-'+i).checked) window.open(buildUrl(p,pn),'_blank'); });
+  addHistory(pn,'openSelected');
+}
+function copyPN(){
+  const pn=document.getElementById('pn-input').value.trim();
+  if(!pn){ alert('请先输入料号'); return; }
+  navigator.clipboard.writeText(pn).then(()=>alert('料号已复制：'+pn));
+}
+renderPlatforms();
 
-  // 读/写设置
-  function getSettings() {
-    return {
-      owner: localStorage.getItem('ft_owner') || '',
-      repo:  localStorage.getItem('ft_repo')  || '',
-      token: localStorage.getItem('ft_token') || ''
-    };
+/* ========== 查询历史 ========== */
+const HIST_KEY='pn_history_v1';
+function loadHist(){ try{ const v=JSON.parse(localStorage.getItem(HIST_KEY)); return Array.isArray(v)?v:[]; }catch(e){ return []; } }
+function saveHist(arr){ try{ localStorage.setItem(HIST_KEY,JSON.stringify(arr)); }catch(e){} }
+function addHistory(pn,note){
+  if(!pn) return;
+  const arr=loadHist();
+  arr.unshift({ ts:new Date().toISOString().replace('T',' ').slice(0,16), pn:pn, note:note||'' });
+  if(arr.length>500) arr.length=500;
+  saveHist(arr);
+  renderHistory();
+}
+function saveCurrentPN(){
+  const pn=document.getElementById('pn-input').value.trim();
+  if(!pn){ alert('请先输入料号'); return; }
+  addHistory(pn,'手动收藏');
+  alert('已存入历史');
+}
+function parseBulk(){
+  const txt=document.getElementById('pn-bulk').value.trim();
+  if(!txt) return [];
+  return txt.split(/[\n,;\t]+/).map(s=>s.trim()).filter(Boolean).slice(0,20);
+}
+function bulkQuery(){
+  const list=parseBulk();
+  if(!list.length){ alert('请先粘贴料号'); return; }
+  list.forEach((pn,i)=>{
+    setTimeout(()=>{
+      document.getElementById('pn-input').value=pn;
+      platforms.forEach(p=>{ if(p.checked) window.open(buildUrl(p,pn),'_blank'); });
+      addHistory(pn,'bulk');
+    }, i*400);
+  });
+}
+function bulkSave(){
+  const list=parseBulk();
+  if(!list.length){ alert('请先粘贴料号'); return; }
+  list.forEach(pn=>addHistory(pn,'bulk-save'));
+  alert('已存入 '+list.length+' 条');
+}
+function renderHistory(){
+  const tbody=document.getElementById('hist-tbody');
+  const kw=(document.getElementById('hist-search').value||'').trim().toLowerCase();
+  const arr=loadHist().filter(r=>!kw || r.pn.toLowerCase().includes(kw) || (r.note||'').toLowerCase().includes(kw));
+  if(!arr.length){
+    tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:#999;padding:20px">暂无记录</td></tr>';
+    return;
   }
-  function saveSettings() {
-    localStorage.setItem('ft_owner', document.getElementById('owner').value.trim());
-    localStorage.setItem('ft_repo',  document.getElementById('repo').value.trim());
-    localStorage.setItem('ft_token', document.getElementById('token').value.trim());
-    const m = document.getElementById('setMsg');
-    m.className = 'msg ok'; m.textContent = '已保存到本机浏览器';
-  }
-  (function initSettings(){
-    const s = getSettings();
-    document.getElementById('owner').value = s.owner;
-    document.getElementById('repo').value = s.repo;
-    document.getElementById('token').value = s.token;
-  })();
+  tbody.innerHTML=arr.map((r,i)=>{
+    const realIdx=loadHist().indexOf(r);
+    return '<tr>'+
+      '<td style="white-space:nowrap;color:#888;font-size:12px">'+r.ts+'</td>'+
+      '<td><span class="hist-pn" onclick="quickQuery(\''+r.pn.replace(/'/g,"\\'")+'\')">'+r.pn+'</span></td>'+
+      '<td style="color:#888;font-size:12px">'+(r.note||'')+'</td>'+
+      '<td class="hist-actions">'+
+        '<button class="btn-secondary" onclick="quickQuery(\''+r.pn.replace(/'/g,"\\'")+'\')">查</button>'+
+        '<button class="btn-secondary" onclick="copyText(\''+r.pn.replace(/'/g,"\\'")+'\')">复制</button>'+
+        '<button class="btn-secondary" style="color:#cf1322" onclick="delHist('+realIdx+')">删</button>'+
+      '</td>'+
+    '</tr>';
+  }).join('');
+}
+function quickQuery(pn){
+  document.getElementById('pn-input').value=pn;
+  switchView('pn');
+  openAll();
+}
+function copyText(t){ navigator.clipboard.writeText(t); }
+function delHist(i){
+  const arr=loadHist(); arr.splice(i,1); saveHist(arr); renderHistory();
+}
+function clearHistory(){
+  if(!confirm('确定清空全部查询历史？')) return;
+  localStorage.removeItem(HIST_KEY);
+  renderHistory();
+}
+function exportCSV(){
+  const arr=loadHist();
+  if(!arr.length){ alert('没有数据'); return; }
+  const csv=['ts,pn,note'].concat(arr.map(r=>[r.ts,r.pn,'"'+(r.note||'').replace(/"/g,'""')+'"'].join(','))).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='pn-history-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
 
-  // 提交询盘 → 触发 repository_dispatch
-  document.getElementById('submitBtn').onclick = async () => {
-    const s = getSettings();
-    if (!s.owner || !s.repo || !s.token) {
-      const m = document.getElementById('submitMsg');
-      m.className = 'msg err';
-      m.textContent = '先去"仓库设置"填 owner / repo / token';
+/* ========== Google Sheets 同步 ========== */
+const GS_URL_KEY='gs_webhook_url';
+function getGSUrl(){ return localStorage.getItem(GS_URL_KEY)||''; }
+function saveGSSettings(){
+  const u=document.getElementById('gs-url').value.trim();
+  localStorage.setItem(GS_URL_KEY,u);
+  const m=document.getElementById('gs-msg');
+  m.textContent=u?'✅ 已保存':'已清空';
+  m.style.color=u?'#52c41a':'#999';
+}
+async function postToGS(payload){
+  const u=getGSUrl();
+  if(!u){ alert('先在设置里填 Webhook URL'); return false; }
+  const r=await fetch(u,{ method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) });
+  return true;
+}
+async function testGS(){
+  const m=document.getElementById('gs-msg');
+  m.textContent='发送中…'; m.style.color='#999';
+  const ok=await postToGS({ type:'test', ts:new Date().toISOString(), pn:'TEST-PN', note:'测试连接' });
+  if(ok){ m.textContent='✅ 已发送，去 Google Sheet 看是否多了一行'; m.style.color='#52c41a'; }
+}
+async function pushAllToSheets(){
+  const arr=loadHist();
+  if(!arr.length){ alert('没有历史数据'); return; }
+  if(!confirm('把 '+arr.length+' 条历史推送到 Google Sheet？')) return;
+  for(const r of arr){
+    await postToGS({ type:'pn_history', ts:r.ts, pn:r.pn, note:r.note });
+    await new Promise(res=>setTimeout(res,300));
+  }
+  alert('推送完成');
+}
+// 初始化
+document.getElementById('gs-url').value=getGSUrl();
+renderHistory();
+
+/* ========== 模块一：今日汇率 ========== */
+function setFX(v,date,src){
+  document.getElementById('fx-status').style.display='none';
+  document.getElementById('fx-main').style.display='flex';
+  document.getElementById('fx-fallback').style.display='none';
+  document.getElementById('fx-rate').textContent=Number(v).toFixed(4);
+  const now=new Date();
+  const ts=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('fx-meta').textContent='数据日期：'+(date||'未知')+' ｜ 抓取时间：'+ts+'（本地时间）｜ 来源：'+src;
+  document.getElementById('q-rate').value=Number(v).toFixed(4);
+  recalcQuote();
+}
+function showFXFallback(reason){
+  document.getElementById('fx-status').style.display='none';
+  document.getElementById('fx-main').style.display='none';
+  document.getElementById('fx-fallback').style.display='flex';
+  document.getElementById('fx-fallback-text').textContent='实时汇率抓取失败（'+reason+'），已切换手动输入。请在下方输入银行现汇买入价。';
+}
+function applyManualFX(){
+  const v=parseFloat(document.getElementById('fx-manual').value);
+  if(!v||v<=0){ alert('请输入有效汇率'); return; }
+  setFX(v,'手动输入','手动输入（降级模式）');
+}
+async function loadFX(){
+  try{
+    const r=await fetch('https://api.frankfurter.app/latest?from=USD&to=CNY');
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    if(!j.rates||!j.rates.CNY) throw new Error('返回无 rates.CNY');
+    setFX(j.rates.CNY,j.date,'Frankfurter 参考汇价');
+    return;
+  }catch(e1){
+    try{
+      const r2=await fetch('https://open.er-api.com/v6/latest/USD');
+      if(!r2.ok) throw new Error('HTTP '+r2.status);
+      const j2=await r2.json();
+      if(!j2.rates||!j2.rates.CNY) throw new Error('返回无 rates.CNY');
+      const d=j2.time_last_update_unix?new Date(j2.time_last_update_unix*1000).toISOString().slice(0,10):(j2.time_last_update_utc||'').slice(0,10);
+      setFX(j2.rates.CNY,d,'open.er-api.com 参考汇价（第二数据源）');
       return;
-    }
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true; btn.textContent = '提交中...';
-    const payload = {
-      name: document.getElementById('name').value.trim(),
-      company: document.getElementById('company').value.trim(),
-      email: document.getElementById('email').value.trim().toLowerCase(),
-      country: document.getElementById('country').value.trim(),
-      part: document.getElementById('part').value.trim(),
-      message: document.getElementById('message').value.trim(),
-      source: 'webbench',
-      ts: new Date().toISOString()
-    };
-    try {
-      const r = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/dispatches`, {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + s.token,
-          'Accept': 'application/vnd.github+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ event_type: 'new_lead', client_payload: payload })
-      });
-      const m = document.getElementById('submitMsg');
-      if (r.status === 204) {
-        m.className = 'msg ok';
-        m.textContent = '已推送! GitHub Actions 正在跑, 约 10-30 秒后飞书会收到通知';
-        ['name','company','email','country','part','message'].forEach(id => document.getElementById(id).value='');
-      } else {
-        m.className = 'msg err';
-        m.textContent = '失败: HTTP ' + r.status + ' ' + await r.text();
-      }
-    } catch (e) {
-      const m = document.getElementById('submitMsg');
-      m.className = 'msg err'; m.textContent = '网络错误: ' + e.message;
-    } finally {
-      btn.disabled = false; btn.textContent = '提交询盘';
-    }
-  };
-
-  // 读取 leads.csv 展示
-  async function loadLeads() {
-    const s = getSettings();
-    const box = document.getElementById('leadsTable');
-    if (!s.owner || !s.repo) { box.innerHTML = '<div class="hint">先填仓库设置</div>'; return; }
-    box.innerHTML = '<div class="hint">加载中...</div>';
-    try {
-      const r = await fetch(`https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/data/leads.csv`);
-      if (!r.ok) { box.innerHTML = '<div class="hint">还没有线索记录 (HTTP '+r.status+')</div>'; return; }
-      const txt = await r.text();
-      const lines = txt.trim().split('\n').filter(l => l.trim());
-      if (lines.length <= 1) { box.innerHTML = '<div class="hint">线索池为空</div>'; return; }
-      const header = lines[0].split(',');
-      let html = '<table><tr>' + header.map(h=>`<th>${h}</th>`).join('') + '</tr>';
-      for (let i = lines.length-1; i >= 1 && i >= lines.length-20; i--) {
-        const cols = lines[i].split(',');
-        html += '<tr>' + cols.map(c=>`<td>${c}</td>`).join('') + '</tr>';
-      }
-      html += '</table>';
-      box.innerHTML = html;
-    } catch (e) {
-      box.innerHTML = '<div class="hint">读取失败: ' + e.message + '</div>';
+    }catch(e2){
+      showFXFallback('两个数据源均不可达（'+(e2&&e2.message?e2.message:'网络错误')+'）');
     }
   }
-</script>
+}
+loadFX();
+
+/* ========== 模块二：报价换算 ========== */
+function $(id){ return document.getElementById(id); }
+function num(id){ const v=parseFloat($(id).value); return isNaN(v)?0:v; }
+function setLoss(v){ $('q-loss').value=v; recalcQuote(); }
+function setDiscount(v){ $('q-discount').value=v; recalcQuote(); }
+function recalcQuote(){
+  const cost=num('q-cost'), loss=num('q-loss'), misc=num('q-misc');
+  const discount=num('q-discount');
+  const customs=num('q-customs'), inland=num('q-inland'), port=num('q-port');
+  const buy=num('q-rate'), margin=num('q-margin');
+  const safe=buy-margin;
+  const discCost=cost*discount;
+  $('o-disc').innerHTML=discCost.toFixed(5)+'<small> CNY</small>';
+  if(safe<=0){ $('o-safe').innerHTML='--<small> CNY/USD</small>'; $('o-exw').innerHTML='--<small> USD</small>'; $('o-dom').innerHTML='--<small> USD</small>'; $('o-fob').innerHTML='--<small> USD</small>'; return; }
+  const exw=(discCost*(1+loss/100)+misc)/safe;
+  const dom=(customs+inland+port)/safe;
+  const fob=exw+dom;
+  $('o-safe').innerHTML=safe.toFixed(4)+'<small> CNY/USD</small>';
+  $('o-exw').innerHTML=exw.toFixed(5)+'<small> USD</small>';
+  $('o-dom').innerHTML=dom.toFixed(5)+'<small> USD</small>';
+  $('o-fob').innerHTML=fob.toFixed(5)+'<small> USD</small>';
+}
+['q-cost','q-discount','q-loss','q-misc','q-customs','q-inland','q-port','q-rate','q-margin'].forEach(id=>{
+  $(id).addEventListener('input',recalcQuote);
+});
+recalcQuote();
+
+/* ========== 模块四：全球节假日与文化速查 ========== */
+const COUNTRIES=[{"country":"韩国","countryEn":"South Korea","code":"KR","timezone":"Asia/Seoul","weekend":["sat","sun"],"religion":"基督教（新教与天主教）、佛教并存，天主教徒约占人口28%，佛教约15%，另有约35%无宗教信仰。","diet":"无严格宗教饮食禁忌，餐桌常见泡菜、烤肉、汤饭；商务宴请多饮酒（马格利/烧酎），主人劝酒时双手举杯以示礼貌。","etiquette":"等级与长幼尊卑分明，首次见面双手递接名片并仔细看后收好；守时观念强，商务会议提前5-10分钟到；多用敬语。","giftTaboo":"忌用红笔写人名（象征死亡/断绝关系）；数字忌4（谐音死），部分人也避开13；礼品包装忌墨绿色、深色，避免过重让对方有回礼压力。","sensitivePeriod":"农历春节（설날，2月中旬连休3-5天）、中秋（추석，9月下旬连休3-5天）为全民返乡高峰，物流与工厂基本停摆；夏季7-8月有盛夏休假。","fridayHabit":"正常办公","officeHours":"一般 09:00-18:00，午休约12:00-13:00；周六部分企业轮班，周五正常。","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"农历春节（旧正/Seollal）","date":"2026-02-17","range":"2026-02-16~2026-02-18","type":"lunar","note":"正月初一为2月17日，连休3天，全民返乡"},{"name":"三一节（独立运动日）","date":"2026-03-01","type":"fixed","note":"逢周日，补休3月2日"},{"name":"国际劳动节","date":"2026-05-01","type":"fixed","note":"2025年起恢复为法定公休日"},{"name":"儿童节","date":"2026-05-05","type":"fixed","note":""},{"name":"佛诞节","date":"2026-05-24","type":"lunar","note":"农历四月初八；逢周日补休5月25日"},{"name":"显忠日","date":"2026-06-06","type":"fixed","note":"缅怀护国先烈"},{"name":"光复节","date":"2026-08-15","type":"fixed","note":"逢周六，补休8月17日"},{"name":"中秋节（秋夕/Chuseok）","date":"2026-09-25","range":"2026-09-24~2026-09-26","type":"lunar","note":"农历八月十五，连休3天，全民返乡"},{"name":"开天节","date":"2026-10-03","type":"fixed","note":"逢周六补休10月5日"},{"name":"韩文日","date":"2026-10-09","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"韩国观光公社 VisitKorea 2026节假日页；infosouthkorea.com 2026 holiday calendar；韩国法律信息中心《公休日法》"},{"country":"日本","countryEn":"Japan","code":"JP","timezone":"Asia/Tokyo","weekend":["sat","sun"],"religion":"神道教与佛教并存，多数人无特定宗教归属但婚丧礼仪多按神道教/佛教进行，基督徒约1%。","diet":"无严格禁忌；商务宴席多为和食/寿司，忌讳用餐时筷子直立插在饭中、忌交叉传递筷子；不给客人反复劝酒。","etiquette":"极度重视礼节与守时，名片双手递接且不直接塞兜；商务场合着深色正装；决策缓慢需多次汇报（禀议制），重视年功序列。","giftTaboo":"数字忌4（谐音死）与9（谐音苦）；忌送梳子（谐音苦死）、白菊花（葬礼用）、绿色/紫色包装；礼品忌4或9个一组；探望病人忌送盆栽（扎根=久病）。","sensitivePeriod":"新年（お正月，12月底至1月3日）黄金周（4月底至5月初多节连休约1周）お盆（8月中旬，企业放假返乡约1周），工厂与物流多停摆。","fridayHabit":"正常办公","officeHours":"一般 09:00-18:00，午休约12:00-13:00；部分商社周五提前下班，周六偶有上班。","holidays":[{"name":"元日（新年）","date":"2026-01-01","type":"fixed","note":"12月29日至1月3日企业多连休"},{"name":"成人之日","date":"2026-01-12","type":"fixed","note":"1月第2个周一"},{"name":"建国纪念日","date":"2026-02-11","type":"fixed","note":""},{"name":"天皇诞生日","date":"2026-02-23","type":"fixed","note":""},{"name":"春分之日","date":"2026-03-20","type":"fixed","note":"祭祀祖先"},{"name":"昭和之日","date":"2026-04-29","type":"fixed","note":"黄金周开始"},{"name":"宪法纪念日","date":"2026-05-03","type":"fixed","note":""},{"name":"绿之日","date":"2026-05-04","type":"fixed","note":""},{"name":"儿童之日","date":"2026-05-05","type":"fixed","note":"黄金周结束"},{"name":"海之日","date":"2026-07-20","type":"fixed","note":"7月第3个周一"},{"name":"山之日","date":"2026-08-11","type":"fixed","note":""},{"name":"敬老之日","date":"2026-09-21","type":"fixed","note":"9月第3个周一"},{"name":"秋分之日","date":"2026-09-23","type":"fixed","note":""},{"name":"体育之日","date":"2026-10-12","type":"fixed","note":"10月第2个周一"},{"name":"文化之日","date":"2026-11-03","type":"fixed","note":""},{"name":"勤劳感谢之日","date":"2026-11-23","type":"fixed","note":""}],"source":"日本国立天文台《令和8(2026)年暦要项》(nao.ac.jp)；日本内阁府「国民の祝日」页面 (cao.go.jp)"},{"country":"越南","countryEn":"Vietnam","code":"VN","timezone":"Asia/Ho_Chi_Minh","weekend":["sat","sun"],"religion":"大乘佛教为主，融合祖先崇拜与儒教、道教影响，另有天主教、高台教、和好教等少数宗教。","diet":"无严格禁忌；餐桌上主人劝菜、共享菜肴为常；忌讳把筷子直插饭中（祭亡者）；商务宴请常喝米酒/啤酒并碰杯到底。","etiquette":"重视年龄与辈分，称呼用亲属称谓；商务名片双手递接；守时但节奏偏慢，决策层级分明；初次见面热情寒暄。","giftTaboo":"忌送手帕（离别）、白礼；数字忌4；送礼宜成双数（好事成双），忌送钟（送终谐音）；避免用黑色或白色包装。","sensitivePeriod":"春节Tết（农历新年，2026年2月14-22日连休9天，全国停摆约1周）、国庆（9月2日前后），工厂与物流基本停摆。","fridayHabit":"正常办公","officeHours":"一般 08:00-17:00，午休约11:30-13:30；周六上午部分企业上班。","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"春节（Tết Nguyên Đán）","date":"2026-02-17","range":"2026-02-14~2026-02-22","type":"lunar","note":"正月初一为2月17日，政府批准连休9天，全国停摆"},{"name":"雄王节","date":"2026-04-26","type":"lunar","note":"农历三月初十，祭祀雄王"},{"name":"南方解放/统一日","date":"2026-04-30","type":"fixed","note":""},{"name":"国际劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"国庆节","date":"2026-09-02","range":"2026-09-02~2026-09-03","type":"fixed","note":"1945年9月2日宣布独立"}],"source":"越南政府门户 en.baochinhphu.vn 2026 holiday schedule；胡志明市政府公告"},{"country":"泰国","countryEn":"Thailand","code":"TH","timezone":"Asia/Bangkok","weekend":["sat","sun"],"religion":"上座部佛教（ Theravada）为国教，佛教徒约95%，南部有穆斯林少数群体。","diet":"佛教国家无严格禁忌，但虔诚佛教徒多不饮酒；商务宴请上对佛教徒避免主动劝酒；头部为神圣部位，勿触摸他人头部。","etiquette":"等级森严，尊重王室（冒犯王室可判刑），见面双手合十（Wai）；守时但商务节奏较松弛；进寺庙/人家脱鞋。","giftTaboo":"忌用黑包装；忌讳踩踏门槛；避免送黄色僧袍给俗人；数字忌讳不强烈；送礼宜用金/亮色系包装。","sensitivePeriod":"宋干节Songkran泼水节（4月13-15日，全国连休）、守夏节（7月中旬佛教大斋期开始）、圣诞节新年假期；斋月不适用。","fridayHabit":"正常办公","officeHours":"一般 08:30-17:00，午休约12:00-13:00；曼谷白领多10:00-19:00；周五正常。","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"万佛节（Makha Bucha）","date":"2026-03-03","type":"buddhist","note":"佛教节日，满月日"},{"name":"却克里王朝纪念日","date":"2026-04-06","type":"fixed","note":""},{"name":"宋干节（泰历新年/泼水节）","date":"2026-04-13","range":"2026-04-13~2026-04-15","type":"fixed","note":"全国连休3天"},{"name":"加冕纪念日","date":"2026-05-04","type":"fixed","note":""},{"name":"国际劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"三宝佛节/守夏节","date":"2026-07-07","type":"buddhist","note":"Asarnha Bucha 及 Buddhist Lent 开始"},{"name":"国王诞辰","date":"2026-07-28","type":"fixed","note":"拉玛十世国王生日"},{"name":"王后诞辰/母亲节","date":"2026-08-12","type":"fixed","note":""},{"name":"朱拉隆功大帝纪念日","date":"2026-10-23","type":"fixed","note":""},{"name":"五世王纪念日/国庆","date":"2026-12-05","type":"fixed","note":"普密蓬国王诞辰暨国庆节"},{"name":"宪法日","date":"2026-12-10","type":"fixed","note":""},{"name":"新年前夜","date":"2026-12-31","type":"fixed","note":""}],"source":"泰国外交部 Official Holidays 2026 (B.E.2569) PDF；泰国政府旅游局2026日历"},{"country":"印尼","countryEn":"Indonesia","code":"ID","timezone":"Asia/Jakarta","weekend":["sat","sun"],"religion":"全球最大穆斯林人口国，伊斯兰教（逊尼派）约87%，另有基督教、天主教、印度教、佛教。","diet":"穆斯林禁猪肉与酒精；斋月白天禁食饮水；商务宴请宜选清真餐厅，避免提供含猪/酒精菜品。","etiquette":"用右手递物/进食，左手视为不洁；商务名片双手接；守时观念较弱（弹性时间）；重视身份与等级。","giftTaboo":"忌酒、猪皮/猪革制品、犬类相关物品；数字忌13；避免送包装过于奢华之物；右手递礼。","sensitivePeriod":"斋月Ramadan（2026年约2月18日起，工作日缩短、午餐不公开进食）、开斋节（3月19-24日连休，大规模返乡mudik，物流停摆）、独立月8月。","fridayHabit":"周五主麻日祈祷、办公缩短/休息","officeHours":"政府机关周一-周四 08:00-15:30、周五 07:30-11:30（祈祷）；企业一般 09:00-17:00。","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"登宵夜（Isra Mikraj）","date":"2026-01-16","type":"islamic","note":""},{"name":"农历新年（Imlek）","date":"2026-02-17","type":"lunar","note":"华人春节"},{"name":"静居日（Nyepi/印度教新年）","date":"2026-03-19","type":"hindu","note":"巴厘岛全天静默，机场关闭"},{"name":"开斋节（Idulfitri）","date":"2026-03-21","range":"2026-03-19~2026-03-24","type":"islamic","note":"全国连休约6天，伊斯兰历每年提前约11天，以官方公布为准"},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"国际劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"宰牲节（Iduladha）","date":"2026-05-27","range":"2026-05-27~2026-05-28","type":"islamic","note":"伊斯兰历每年提前约11天，以官方公布为准"},{"name":"佛诞节（Waisak）","date":"2026-05-31","type":"buddhist","note":""},{"name":"潘查希拉日","date":"2026-06-01","type":"fixed","note":""},{"name":"伊斯兰历新年（1 Muharram）","date":"2026-06-16","type":"islamic","note":""},{"name":"独立日","date":"2026-08-17","type":"fixed","note":"1945年8月17日宣布独立"},{"name":"圣纪节（Maulid）","date":"2026-08-25","type":"islamic","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"印尼国家秘书处 setneg.go.id SKB 3 Menteri 2026；Keppres 42/2025 共同假日"},{"country":"马来西亚","countryEn":"Malaysia","code":"MY","timezone":"Asia/Kuala_Lumpur","weekend":["sat","sun"],"religion":"伊斯兰教为国教，穆斯林约63%，另有佛教、印度教、基督教，宗教多元。","diet":"穆斯林禁猪肉与酒精；商务宴请选清真餐厅（Halal），勿提供猪肉/酒；印度教徒禁牛肉。","etiquette":"用右手递物，左手不洁；名片双手接；穆斯林会面不宜主动握手（女性）；守时但节奏偏慢。","giftTaboo":"忌酒、猪制品；避免送皮革制品（猪皮）给穆斯林；黄色对部分马来人有特殊含义；送礼宜右手。","sensitivePeriod":"斋月（约2月18日起，工作时长缩短）、开斋节（3月20-21日起连休，即Balik Kampung返乡潮）、大宝森节（2月初）、屠妖节（11月初）。","fridayHabit":"周五主麻日祈祷、办公缩短/休息","officeHours":"周一-周五 09:00-18:00，午休约13:00-14:00（马来穆斯林周五祈祷时段）；部分州周五午间休息。","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"大宝森节（Thaipusam）","date":"2026-02-01","type":"hindu","note":"印度教节日，逢周日补休"},{"name":"农历新年","date":"2026-02-17","range":"2026-02-17~2026-02-18","type":"lunar","note":"连休2天"},{"name":"开斋节（Hari Raya Puasa）","date":"2026-03-20","range":"2026-03-20~2026-03-21","type":"islamic","note":"伊斯兰历每年提前约11天，以官方月相观测为准"},{"name":"五一劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"宰牲节（Hari Raya Haji）","date":"2026-05-27","type":"islamic","note":""},{"name":"伊斯兰历新年","date":"2026-06-16","type":"islamic","note":""},{"name":"圣纪节","date":"2026-08-25","type":"islamic","note":""},{"name":"国庆日（Merdeka）","date":"2026-08-31","type":"fixed","note":"1957年独立"},{"name":"屠妖节（Deepavali）","date":"2026-11-08","type":"hindu","note":"印度教灯节，逢周日补休11月9日"},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"马来西亚外交部 kln.gov.my 各国使馆2026假日表；吉兰丹州政府 HKA-2026 PDF"},{"country":"菲律宾","countryEn":"Philippines","code":"PH","timezone":"Asia/Manila","weekend":["sat","sun"],"religion":"天主教约80%，为亚洲唯一天主教为主国家，另有基督新教、伊斯兰教（南部棉兰老）。","diet":"无严格宗教禁忌（除穆斯林地区）；商务宴请常见 lechon、烧烤；宴请后通常有餐后甜点/咖啡。","etiquette":"热情好客，重视家庭与人际关系（pakikisama）；商务名片随意但礼貌；守时观念中等，会议可能延迟。","giftTaboo":"节日送礼（圣诞季）为文化；忌在圣诞前送白色百合花（葬礼）；送礼宜适中，避免让对方有压力。","sensitivePeriod":"圣周Holy Week（4月2-4日，全国半停摆）、圣诞季（12月16日至1月初，工作节奏放缓）、雨季台风季（6-10月）。","fridayHabit":"正常办公","officeHours":"政府 08:00-17:00，企业 09:00-18:00，午休约12:00-13:00；周五正常。","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"农历新年","date":"2026-02-17","type":"lunar","note":"特别非工作日"},{"name":"开斋节（Eid'l Fitr）","date":"2026-03-20","type":"islamic","note":"第1189号公告；以月相观测为准"},{"name":"濯足节","date":"2026-04-02","type":"fixed","note":"圣周开始"},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":"全国半停摆"},{"name":"勇敢日（Araw ng Kagitingan）","date":"2026-04-09","type":"fixed","note":"巴丹日"},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"宰牲节（Eid'l Adha）","date":"2026-05-27","type":"islamic","note":"第1264号公告"},{"name":"独立日","date":"2026-06-12","type":"fixed","note":"1898年独立"},{"name":"尼诺·阿基诺日","date":"2026-08-21","type":"fixed","note":"特别非工作日"},{"name":"国家英雄日","date":"2026-08-31","type":"fixed","note":"8月最后一个周一"},{"name":"万圣节","date":"2026-11-01","type":"fixed","note":"特别非工作日"},{"name":"波尼法秀日","date":"2026-11-30","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""},{"name":"黎刹日","date":"2026-12-30","type":"fixed","note":""}],"source":"菲律宾总统公告第1006号 (2025)；第1189、1264号公告；clocktap.app 2026 Philippine Holidays"},{"country":"新加坡","countryEn":"Singapore","code":"SG","timezone":"Asia/Singapore","weekend":["sat","sun"],"religion":"佛教/道教约33%，伊斯兰教约15%，基督教约18%，印度教约5%，无宗教约18%，多元宗教共存。","diet":"多元饮食文化；商务宴请尊重各宗教禁忌（穆斯林清真、印度教不食牛肉）；禁止在公共交通饮食。","etiquette":"守时极严格，商务名片双手递；重视效率与法治；英语为商务通用语；排队文化强。","giftTaboo":"政府官员收礼有严格限额；送礼避免4个一组；颜色无明显禁忌；圣诞节贺卡为常。","sensitivePeriod":"农历新年（2月17-18日，部分华商停摆2-3天）、开斋节（3月21日）、国庆（8月9日）、圣诞节。","fridayHabit":"正常办公","officeHours":"一般 09:00-18:00，午休约12:00-13:00；周五正常。","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"农历新年","date":"2026-02-17","range":"2026-02-17~2026-02-18","type":"lunar","note":"连休2天"},{"name":"开斋节（Hari Raya Puasa）","date":"2026-03-21","type":"islamic","note":"以月相观测为准"},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"宰牲节（Hari Raya Haji）","date":"2026-05-27","type":"islamic","note":""},{"name":"佛诞节（Vesak Day）","date":"2026-05-31","type":"buddhist","note":"逢周日补休6月1日"},{"name":"国庆日","date":"2026-08-09","type":"fixed","note":"逢周日补休8月10日"},{"name":"屠妖节（Deepavali）","date":"2026-11-08","type":"hindu","note":"逢周日补休11月9日"},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"新加坡政府公报 Public Holidays 2026 No.2258；新加坡人力部 MOM public-holidays"},{"country":"印度","countryEn":"India","code":"IN","timezone":"Asia/Kolkata","weekend":["sun"],"religion":"印度教约80%，伊斯兰教约14%，另有基督教、锡克教、佛教、耆那教。","diet":"印度教徒禁牛肉（牛为圣物），穆斯林禁猪肉与酒精；商务宴请宜选素食/清真餐厅，提供明确素食选项。","etiquette":"商务名片随意；等级与种姓观念仍存；守时观念弱，会议常延迟；谈判节奏慢、爱讨价还价。","giftTaboo":"印度教徒忌牛皮制品（皮带/皮包）；穆斯林忌酒与猪制品；送礼忌用左手；数字不明显。","sensitivePeriod":"排灯节Diwali（11月初，华商/工厂停摆约1周）、洒红节Holi（3月初）、开斋节、十胜节（Dussehra，10月初）。","fridayHabit":"正常办公","officeHours":"企业一般 10:00-18:00，政府 09:30-18:00，午休约13:00-14:00；周六多为半天或休息。","holidays":[{"name":"共和国日","date":"2026-01-26","type":"fixed","note":""},{"name":"洒红节（Holi）","date":"2026-03-03","type":"hindu","note":"印度教春节"},{"name":"开斋节（Eid ul-Fitr/Ramzan Id）","date":"2026-03-21","type":"islamic","note":"以月相观测为准"},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"佛诞节（Buddha Purnima）","date":"2026-05-01","type":"buddhist","note":""},{"name":"宰牲节（Bakrid/Eid al-Adha）","date":"2026-05-27","type":"islamic","note":""},{"name":"阿舒拉节（Muharram）","date":"2026-06-26","type":"islamic","note":"什叶派纪念卡尔巴拉"},{"name":"独立日","date":"2026-08-15","type":"fixed","note":""},{"name":"圣纪节（Milad-un-Nabi）","date":"2026-08-26","type":"islamic","note":""},{"name":"甘地诞辰","date":"2026-10-02","type":"fixed","note":""},{"name":"排灯节（Diwali）","date":"2026-11-08","type":"hindu","note":"印度教灯节，全国重要假日"}],"source":"印度调查局 Survey of India 2026 Gazetted Holidays PDF；印度邮政 India Post holidays list；印度最高法院日历"},{"country":"沙特阿拉伯","countryEn":"Saudi Arabia","code":"SA","timezone":"Asia/Riyadh","weekend":["fri","sat"],"religion":"伊斯兰教（逊尼派瓦哈比教义为主），穆斯林约100%，禁其他宗教公开活动。","diet":"严格伊斯兰教法：绝对禁猪肉、酒精及非清真屠宰食品；斋月白天禁食饮水；商务宴请无酒。","etiquette":"守时但社交节奏慢；商务名片随意；男女有别；谈判需耐心，重视关系建立（Wasta）；周五周六休息。","giftTaboo":"忌酒、猪制品、色情/宗教敏感物品、犬类形象；忌送酒类；送礼宜右手，避免当面拆礼。","sensitivePeriod":"斋月Ramadan（约2月18日起，工作日缩短至6小时，业务极慢）、开斋节（3月20-23日起连放约10天）、宰牲节（5月27-29日起连放约10天）。","fridayHabit":"周五主麻日祈祷、办公缩短/休息","officeHours":"政府机构周日-周四 08:00-14:00；企业 09:00-17:00；斋月期间缩短；周五周六休息。","holidays":[{"name":"建国日（Founding Day）","date":"2026-02-22","type":"fixed","note":""},{"name":"开斋节（Eid al-Fitr）","date":"2026-03-20","range":"2026-03-20~2026-03-23","type":"islamic","note":"政府/银行连休约10天；以官方月相观测为准"},{"name":"阿拉法特日","date":"2026-05-26","type":"islamic","note":"沙特最高法院确认Dhul-Hijjah 9日"},{"name":"宰牲节（Eid al-Adha）","date":"2026-05-27","range":"2026-05-27~2026-05-29","type":"islamic","note":"政府/银行连休约10天"},{"name":"国庆日","date":"2026-09-23","type":"fixed","note":"1932年统一"}],"source":"沙特中央银行 SAMA Holiday Schedules；沙特SPA通讯社公告；globalholidayscalendar.com"},{"country":"阿联酋","countryEn":"United Arab Emirates","code":"AE","timezone":"Asia/Dubai","weekend":["sat","sun"],"religion":"伊斯兰教（逊尼派为主）为国教，约76%人口为穆斯林，另有大量外籍基督徒、印度教徒。","diet":"穆斯林禁猪肉与酒精；商务宴请在酒店/持牌餐厅可提供酒，但避免向穆斯林劝酒；公共场合斋月白天禁食。","etiquette":"周一周五工作（周末周六日）；商务名片随意；守时较好；外籍人士众多，英语通用；Ramadan期间注意着装。","giftTaboo":"忌酒、猪制品；避免送带宗教/政治敏感图案物品；送礼宜右手；勿送过于私人之物。","sensitivePeriod":"斋月Ramadan（约2月18日起，工作时长缩短至6小时）、开斋节（3月19-22日连休）、宰牲节（5月27-29日）、国庆（12月2-3日）。","fridayHabit":"周五主麻日祈祷、办公缩短/休息","officeHours":"政府周一-周五 07:30-15:30（斋月调整）；企业 09:00-18:00；周末周六日休息。","holidays":[{"name":"开斋节（Eid al-Fitr）","date":"2026-03-19","range":"2026-03-19~2026-03-22","type":"islamic","note":"FAHR第2号公告；以月相观测为准"},{"name":"阿拉法特日","date":"2026-05-26","type":"islamic","note":""},{"name":"宰牲节（Eid al-Adha）","date":"2026-05-27","range":"2026-05-27~2026-05-29","type":"islamic","note":"FAHR公告5月25-29日联邦休假"},{"name":"伊斯兰历新年","date":"2026-06-16","type":"islamic","note":""},{"name":"先知诞辰（Mawlid）","date":"2026-08-25","type":"islamic","note":"12 Rabi' al-Awwal"},{"name":"纪念日（Commemoration Day）","date":"2026-12-01","type":"fixed","note":""},{"name":"国庆日","date":"2026-12-02","range":"2026-12-02~2026-12-03","type":"fixed","note":"1971年建国"}],"source":"阿联酋政府门户 u.ae public holidays；FAHR Circular No.2/2026；WAM通讯社公告"},{"country":"卡塔尔","countryEn":"Qatar","code":"QA","timezone":"Asia/Qatar","weekend":["fri","sat"],"religion":"伊斯兰教（逊尼派为主，瓦哈比教义），本国公民约100%穆斯林，外籍人士多。","diet":"严格穆斯林国家：禁猪肉、酒精；公共场合斋月白天禁食；商务宴请选酒店餐厅。","etiquette":"周四周五为周末（实际周五周六休息）；守时较好；商务英语通用；谈判需耐心；男女隔离场所注意着装。","giftTaboo":"忌酒、猪制品、宗教/政治敏感物品；送礼宜右手；避免当面拆礼。","sensitivePeriod":"斋月（约2月18日起，工作缩短）、开斋节（3月20-23日连休）、宰牲节（5月27-29日连休）、国庆（12月18日）。","fridayHabit":"周五主麻日祈祷、办公缩短/休息","officeHours":"周日-周四 07:00-14:00（政府）；企业 08:00-17:00；周五周六休息；斋月缩短。","holidays":[{"name":"体育日（Sports Day）","date":"2026-02-10","type":"fixed","note":"2月第二个周二"},{"name":"开斋节（Eid al-Fitr）","date":"2026-03-20","range":"2026-03-20~2026-03-23","type":"islamic","note":"以月相观测为准"},{"name":"宰牲节（Eid al-Adha）","date":"2026-05-27","range":"2026-05-27~2026-05-29","type":"islamic","note":""},{"name":"伊斯兰历新年","date":"2026-06-16","type":"islamic","note":""},{"name":"国庆日","date":"2026-12-18","type":"fixed","note":"1878年独立"}],"source":"卡塔尔政府官方假日公告；timeanddate.com 卡塔尔2026日历（与海湾国家统一历表交叉核验）"},{"country":"土耳其","countryEn":"Turkey","code":"TR","timezone":"Europe/Istanbul","weekend":["sat","sun"],"religion":"穆斯林约99%（逊尼派为主），但为世俗共和国，政教分离，无国教。","diet":"穆斯林为主：传统上禁酒与猪肉，但世俗都市商务场合可饮酒；用餐右手；忌交叉传递。","etiquette":"守时；商务名片双手递；重视建立个人关系（红茶待客）；等级观念强；谈判热情而坚韧。","giftTaboo":"送礼较轻；数字无明显禁忌；送酒给世俗商务伙伴可接受，但对虔诚穆斯林避免；忌送带猪/狗形象物品。","sensitivePeriod":"斋月（约2月18日起，工作缩短）、开斋节（3月20-23日连休3-4天）、宰牲节（5月27-30日连休4天）、8月底胜利日。","fridayHabit":"周五主麻日祈祷、办公缩短/休息","officeHours":"一般 09:00-18:00，午休约12:30-13:30；周六周日休息。","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"国家主权与儿童节","date":"2026-04-23","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"国父纪念暨青年运动日","date":"2026-05-19","type":"fixed","note":""},{"name":"开斋节（Ramazan Bayramı）","date":"2026-03-20","range":"2026-03-20~2026-03-23","type":"islamic","note":"连休3.5天；以官方公布为准"},{"name":"宰牲节（Kurban Bayramı）","date":"2026-05-27","range":"2026-05-27~2026-05-30","type":"islamic","note":"连休4.5天"},{"name":"胜利日","date":"2026-08-30","type":"fixed","note":""},{"name":"共和国日","date":"2026-10-29","type":"fixed","note":"1923年共和国成立"}],"source":"土耳其官方假日公告；各国驻土使馆2026假日表；与Eid al-Fitr/Adha统一历表交叉核验"},{"country":"以色列","countryEn":"Israel","code":"IL","timezone":"Asia/Jerusalem","weekend":["fri","sat"],"religion":"犹太人约73%，穆斯林约21%，基督徒约2%，德鲁兹人约1.6%。","diet":"犹太教饮食戒律（Kosher）：不食猪肉、贝类，肉奶分离；商务宴请宜选Kosher餐厅。","etiquette":"周日-周四工作；周五下午起安息日（Shabbat），公共交通停摆；商务直接、直率；名片随意。","giftTaboo":"数字忌13（部分）；送礼可送犹太洁食；勿送猪肉/贝类；安息日（周五日落-周六日落）勿安排会议。","sensitivePeriod":"犹太新年Rosh Hashanah（9月12-14日）、赎罪日Yom Kippur（9月20-21日，全国停摆）、住棚节（9月25-10月3日）、逾越节（4月2-9日）。","fridayHabit":"周五下午起进入安息日（Shabbat），办公缩短、日落起全国停摆","officeHours":"周日-周四 08:30-17:30，周五 08:00-14:00（安息日前下班）；周六全天休息。","holidays":[{"name":" Purim（普珥节）","date":"2026-03-03","type":"jewish","note":"特拉维夫3月3日，耶路撒冷3月4日（Shushan Purim）"},{"name":"逾越节（Pesach）","date":"2026-04-02","range":"2026-04-02~2026-04-09","type":"jewish","note":"首日4月2日、末日4月8-9日停摆"},{"name":"独立日（Yom Ha'atzmaut）","date":"2026-04-22","type":"jewish","note":"以色列央行交易日历确认"},{"name":"五旬节（Shavuot）","date":"2026-05-22","type":"jewish","note":""},{"name":"犹太新年（Rosh Hashanah）","date":"2026-09-12","range":"2026-09-12~2026-09-14","type":"jewish","note":"提斯利月1-2日"},{"name":"赎罪日（Yom Kippur）","date":"2026-09-21","type":"jewish","note":"9月20日落至21日夜间，全国停摆"},{"name":"住棚节（Sukkot）","date":"2026-09-25","range":"2026-09-25~2026-10-03","type":"jewish","note":"首日与末日停摆"}],"source":"以色列银行 BOI Markets business days 2026 PDF；以色列外交部 gov.il High Holy Days 2026；Hebcal Israel 2026"},{"country":"伊朗","countryEn":"Iran","code":"IR","timezone":"Asia/Tehran","weekend":["thu","fri"],"religion":"伊斯兰教（什叶派十二伊玛目派为国教），穆斯林约99%。","diet":"严格穆斯林国家：禁猪肉、酒精及含酒精饮料；商务宴请无酒；右手进食。","etiquette":"周四周五休息（周末），工作周六至周三；商务名片随意；守时观念中等；受国际制裁影响结算特殊。","giftTaboo":"忌酒、猪制品；无明显数字禁忌；送礼宜适中；避免送带狗/猪形象物品。","sensitivePeriod":"诺鲁孜节Nowruz（波斯新年，3月20日起连休约13天至4月2日）、斋月（2月起）、阿舒拉节（穆哈兰姆月，约7月下旬）。","fridayHabit":"周五主麻日祈祷、办公缩短/休息（周五为周末）","officeHours":"周六-周三 08:00-16:30；周四周五休息；夏季作息缩短。","holidays":[{"name":"革命纪念日","date":"2026-02-11","type":"fixed","note":"1979年伊斯兰革命"},{"name":"诺鲁孜节（波斯新年）","date":"2026-03-20","range":"2026-03-20~2026-03-29","type":"persian","note":"连休约13天（含Sizdah Bedar 4月1日）"},{"name":"开斋节（Eid al-Fitr）","date":"2026-03-21","type":"islamic","note":"什叶派按官方月相观测"},{"name":"宰牲节（Eid al-Adha）","date":"2026-05-27","type":"islamic","note":""},{"name":"伊玛目诞/盖迪尔节","date":"2026-05-28","type":"islamic","note":"什叶派节日"},{"name":"阿舒拉节（Ashura）","date":"2026-07-25","type":"islamic","note":"穆哈兰姆月10日"}],"source":"伊朗官方日历；与Eid al-Fitr/Adha统一历表交叉核验；新华社诺鲁孜节报道"},{"country":"巴基斯坦","countryEn":"Pakistan","code":"PK","timezone":"Asia/Karachi","weekend":["sun"],"religion":"伊斯兰教（逊尼派为主）约97%，少数基督徒、印度教徒。","diet":"穆斯林禁猪肉与酒精；商务宴请选清真餐厅，不提供酒；右手进食。","etiquette":"守时观念较弱；商务名片随意；等级观念强；谈判需耐心；周日休息（部分机构周六也休）。","giftTaboo":"忌酒、猪制品；送礼宜右手；无明显数字禁忌；避免送带宗教敏感内容物品。","sensitivePeriod":"斋月（2月18日起，工作缩短）、开斋节（3月20-23日连休，大规模返乡）、宰牲节（5月27-29日）、独立日（8月14日）。","fridayHabit":"周五主麻日祈祷、办公缩短/休息","officeHours":"政府 09:00-17:00（周五 09:00-12:30 后祈祷休息）；企业 09:00-18:00；周日休息。","holidays":[{"name":"克什米尔日","date":"2026-02-05","type":"fixed","note":""},{"name":"巴基斯坦日","date":"2026-03-23","type":"fixed","note":"拉合尔决议日"},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"开斋节（Eid ul-Fitr）","date":"2026-03-20","range":"2026-03-20~2026-03-22","type":"islamic","note":"以月相观测为准"},{"name":"宰牲节（Eid ul-Adha）","date":"2026-05-27","range":"2026-05-26~2026-05-29","type":"islamic","note":"总理办公室公告5月26-28日放假"},{"name":"阿舒拉节（Ashura）","date":"2026-06-24","range":"2026-06-24~2026-06-25","type":"islamic","note":"9-10 Muharram"},{"name":"独立日","date":"2026-08-14","type":"fixed","note":"1947年独立"},{"name":"圣纪节（Eid Milad-un-Nabi）","date":"2026-08-25","type":"islamic","note":"12 Rabi' al-Awwal 1448"},{"name":"烈士节/真纳诞辰","date":"2026-12-25","type":"fixed","note":"国父真纳生日暨圣诞节"}],"source":"巴基斯坦内阁分部 Cabinet Division Public Holidays 2026 PDF；巴基斯坦证交所 PSX holiday calendar"},{"country":"孟加拉国","countryEn":"Bangladesh","code":"BD","timezone":"Asia/Dhaka","weekend":["fri","sat"],"religion":"伊斯兰教（逊尼派为主）约90%，印度教约8%，少数佛教、基督教。","diet":"穆斯林禁猪肉与酒精；商务宴请选清真餐厅；右手进食；咖喱、米饭为主食。","etiquette":"周五周六休息；商务名片随意；等级观念强；守时观念弱；谈判耐心。","giftTaboo":"忌酒、猪制品；送礼宜右手；无明显数字禁忌；避免送带狗/猪形象物品。","sensitivePeriod":"斋月（2月18日起，工作缩短）、开斋节（3月19-23日连休，大规模返乡）、宰牲节（5月25-30日）、胜利日（12月16日）。","fridayHabit":"周五主麻日祈祷、办公缩短/休息","officeHours":"政府周日-周四 09:00-17:00；企业 09:00-18:00；周五周六休息。","holidays":[{"name":"烈士日（语言运动日）","date":"2026-02-21","type":"fixed","note":""},{"name":"开斋节（Eid-ul-Fitr）","date":"2026-03-20","range":"2026-03-19~2026-03-23","type":"islamic","note":"连休5天；以月相观测为准"},{"name":"独立日","date":"2026-03-26","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"宰牲节（Eid-ul-Adha）","date":"2026-05-27","range":"2026-05-25~2026-05-30","type":"islamic","note":"连休约5天"},{"name":"阿舒拉节（Ashura）","date":"2026-06-25","type":"islamic","note":""},{"name":"国民哀悼日","date":"2026-08-15","type":"fixed","note":"纪念国父遇害"},{"name":"胜利日","date":"2026-12-16","type":"fixed","note":"1971年独立"}],"source":"孟加拉国驻东京大使馆 2026 Holidays list；驻迪拜总领馆 holidays 2026；总理办公室公告"},{"country":"哈萨克斯坦","countryEn":"Kazakhstan","code":"KZ","timezone":"Asia/Almaty","weekend":["sat","sun"],"religion":"伊斯兰教（逊尼派哈乃斐学派）约70%，俄罗斯东正教约26%，世俗国家。","diet":"穆斯林传统上不食猪肉，但世俗都市商务场合可接受；传统食物为马肉、羊肉、奶制品。","etiquette":"商务名片双手递；守时较好；重视等级与尊重长辈；俄语为商务通用语；待客热情。","giftTaboo":"忌送刀具（象征断交）；送礼宜双手；无明显数字禁忌；偶数花用于葬礼，忌送偶数花。","sensitivePeriod":"元旦（1月1-2日）、纳乌鲁斯节Nauryz（3月21-23日，全国连休）、胜利日（5月9日）、宪法日（10月25日）。","fridayHabit":"正常办公","officeHours":"周一-周五 09:00-18:00，午休约13:00-14:00；周六周日休息。","holidays":[{"name":"元旦","date":"2026-01-01","range":"2026-01-01~2026-01-02","type":"fixed","note":"连休2天"},{"name":"国际妇女节","date":"2026-03-08","type":"fixed","note":"逢周日补休3月9日"},{"name":"共和国宪法日","date":"2026-03-15","type":"fixed","note":""},{"name":"纳乌鲁斯节（Nauryz）","date":"2026-03-21","range":"2026-03-21~2026-03-23","type":"persian","note":"波斯新年，连休3天"},{"name":"人民团结日","date":"2026-05-01","type":"fixed","note":""},{"name":"祖国保卫者日","date":"2026-05-07","type":"fixed","note":""},{"name":"胜利日","date":"2026-05-09","type":"fixed","note":"纪念二战胜利"},{"name":"首都日（阿斯塔纳日）","date":"2026-07-07","type":"fixed","note":""},{"name":"共和国日","date":"2026-10-25","type":"fixed","note":""},{"name":"独立日","date":"2026-12-16","type":"fixed","note":"1991年独立"}],"source":"哈萨克斯坦政府门户 gov.kz 2026 holidays and weekends；egov.kz 2026生产日历"},{"country":"缅甸","countryEn":"Myanmar","code":"MM","timezone":"Asia/Yangon","weekend":["sat","sun"],"religion":"佛教（上座部）约88%，少数基督教、伊斯兰教、印度教。","diet":"佛教为主，无严格禁忌；传统饮食辣酸；商务宴请无酒禁忌但寺庙内不食荤。","etiquette":"商务名片随意；重视头部（勿摸）；右脚为先；受军政府影响，部分制裁与结算风险需关注。","giftTaboo":"忌用左手；无明显数字禁忌；送礼宜适中；避免送带政治敏感内容物品。","sensitivePeriod":"泼水节Thingyan（4月13-17日，全国连休）、独立节（1月4日）、点灯节Thadingyut（10月下旬）。","fridayHabit":"正常办公","officeHours":"政府 09:30-16:30（周一-周五）；企业 09:00-17:30；周六周日休息。","holidays":[{"name":"独立节","date":"2026-01-04","type":"fixed","note":"1948年独立"},{"name":"建军节","date":"2026-03-27","type":"fixed","note":""},{"name":"泼水节（Thingyan/缅历新年）","date":"2026-04-13","range":"2026-04-13~2026-04-17","type":"buddhist","note":"全国连休，4月17日为缅历元旦"},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"点灯节（Thadingyut）","date":"2026-10-24","type":"buddhist","note":"佛教满月日，庆祝佛陀上天归来"},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"缅甸官方假日公告；2023年泼水节报道交叉核验公历；人民网缅甸将春节列为公共假日公告"},{"country":"柬埔寨","countryEn":"Cambodia","code":"KH","timezone":"Asia/Phnom_Penh","weekend":["sat","sun"],"religion":"佛教（上座部）约97%，国教为佛教。","diet":"佛教为主，无严格禁忌；传统食物米饭、酸辣；商务宴请无酒禁忌；寺庙参观需脱鞋、着过膝衣物。","etiquette":"商务名片随意；重视国王与等级；守时观念中等；双手合十礼；商务节奏较慢。","giftTaboo":"忌用左手；勿摸他人头部；脚为最低部位，勿用脚指物；无明显数字禁忌。","sensitivePeriod":"Khmer New Year（4月14-16日，全国连休，是最重要节日）、Pchum Ben亡人节（10月中旬连休）、送水节Water Festival（11月上旬）。","fridayHabit":"正常办公","officeHours":"政府 07:30-17:00，午休约11:30-14:00；企业 08:00-17:00；周六周日休息。","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"胜利节（红色高棉倒台）","date":"2026-01-07","type":"fixed","note":""},{"name":"高棉新年（Chaul Chnam Thmey）","date":"2026-04-14","range":"2026-04-14~2026-04-16","type":"buddhist","note":"全国最重要节日，连休3天"},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":"2026年与Visak Bochea重合"},{"name":"御耕节","date":"2026-05-05","type":"buddhist","note":""},{"name":"国王诞辰","date":"2026-05-14","type":"fixed","note":"西哈莫尼国王生日"},{"name":"太皇太后诞辰","date":"2026-06-18","type":"fixed","note":""},{"name":"宪法日","date":"2026-09-24","type":"fixed","note":""},{"name":"亡人节（Pchum Ben）","date":"2026-10-10","range":"2026-10-10~2026-10-12","type":"buddhist","note":"连休3天"},{"name":"国父西哈努克逝世纪念","date":"2026-10-15","type":"fixed","note":""},{"name":"独立日","date":"2026-11-09","type":"fixed","note":"1953年独立"}],"source":"柬埔寨劳动培训部 lrc.gov.kh 2026 annual holiday calendar；新加坡驻金边使馆公告；themapcambodia.com"},{"country":"美国","countryEn":"United States","code":"US","timezone":"America/New_York","weekend":["sat","sun"],"religion":"宗教多元，基督教新教、天主教信徒占多数，另有大量犹太教、伊斯兰教、佛教等信众，社会整体世俗化。","diet":"饮食量大、快餐与红肉消费普遍，商务午餐常汉堡/三明治简餐；一般无特殊饮食禁忌，但需注意客人可能的素食、无麸质或清真需求。","etiquette":"商务沟通直接、高效、重结果；首次见面握手有力、目光接触；重视合同与书面细节；称呼常用Mr./Ms.+姓，熟络后可直呼其名。","giftTaboo":"忌送过于昂贵的礼品（可能被视为贿赂）；办公场合带小份礼品（咖啡、甜点、公司周边）即可；避免红玫瑰（浪漫含义）。","sensitivePeriod":"圣诞节至元旦长假(12月下旬-1月初)；感恩节周(11月下旬)；夏季7-8月度假季商务节奏放缓；独立日(7月初)前后。","fridayHabit":"正常办公，部分行业周五下午较早下班，接近周末安排松散。","officeHours":"09:00-17:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"马丁·路德·金日","date":"2026-01-19","type":"fixed","note":"1月第3个周一，联邦假日"},{"name":"总统日","date":"2026-02-16","type":"fixed","note":"2月第3个周一"},{"name":"阵亡将士纪念日","date":"2026-05-25","type":"fixed","note":"5月最后一个周一，夏季开始"},{"name":"六月节","date":"2026-06-19","type":"fixed","note":"联邦假日"},{"name":"独立日","date":"2026-07-03","type":"fixed","note":"7月4日逢周六，联邦假日前移至周五观察"},{"name":"劳动节","date":"2026-09-07","type":"fixed","note":"9月第1个周一"},{"name":"哥伦布日","date":"2026-10-12","type":"fixed","note":"10月第2个周一"},{"name":"退伍军人节","date":"2026-11-11","type":"fixed","note":""},{"name":"感恩节","date":"2026-11-26","type":"fixed","note":"11月第4个周四，次日周五多休假"},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"美国国家档案馆 archives.gov 2026 Federal Holidays；OPM opm.gov；USAGov"},{"country":"墨西哥","countryEn":"Mexico","code":"MX","timezone":"America/Mexico_City","weekend":["sat","sun"],"religion":"以天主教为主（约七成以上信徒），近年新教增长；宗教对社会生活影响明显。","diet":"以玉米、豆类、辣椒、牛肉为主，商务宴请常用塔可、龙舌兰酒；注意客人可能忌辣。","etiquette":"商务关系重人情、见面寒暄时间长，初次见面常握手/贴面；时间观念偏灵活，会议可能迟到；重视面对面建立信任后再谈合同。","giftTaboo":"避免送黄色、红色花（有负面含义）；忌送尖锐物品；包装避免紫色（与丧葬关联）。","sensitivePeriod":"圣诞新年长假(12月中旬-1月初)；圣周(3月末-4月初)；暑假(7-8月)；独立日(9月16日前后庆祝活动密集)。","fridayHabit":"正常办公，周五下午常提前下班，临近周末节奏放缓。","officeHours":"09:00-18:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"宪法日","date":"2026-02-02","type":"fixed","note":"2月第一个周一，纪念2月5日宪法"},{"name":"华雷斯诞辰","date":"2026-03-16","type":"fixed","note":"3月第3个周一"},{"name":"圣周(濯足节/耶稣受难日)","date":"2026-04-02","range":"2026-04-02~2026-04-03","type":"fixed","note":"广泛放假，虽非法定联邦假日"},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"独立日","date":"2026-09-16","type":"fixed","note":""},{"name":"革命日","date":"2026-11-16","type":"fixed","note":"11月第3个周一"},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"墨西哥外交部驻奥使馆官方PDF DIAS FESTIVOS EN MEXICO 2026；calendariodemexico.com；LFT第74条"},{"country":"巴西","countryEn":"Brazil","code":"BR","timezone":"America/Sao_Paulo","weekend":["sat","sun"],"religion":"天主教与新教信徒众多，同时存在非洲裔传统宗教(坎东布莱、乌姆班达)与灵教，宗教融合度高。","diet":"以米饭、黑豆、豆子炖肉(feijoada)为主，饮品常用咖啡、卡琵莉亚鸡尾酒；商务午餐时间长。","etiquette":"商务氛围轻松、重视人际关系，初次见面拥抱/拍背；时间观念灵活；谈判节奏慢但关系一旦建立忠诚度高；葡语沟通。","giftTaboo":"避免送紫色(葬礼色)与手帕(分离象征)；忌讳锋利物品；礼品宜私下赠送。","sensitivePeriod":"狂欢节(2月中旬，多放假数日)；圣诞新年(12月下旬-1月初)；冬季暑假(1-2月)；圣周(4月初)。","fridayHabit":"正常办公，周五下午社交与提前下班较普遍。","officeHours":"09:00-18:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"狂欢节","date":"2026-02-16","range":"2026-02-16~2026-02-17","type":"fixed","note":"联邦 facultativo，企业多放假"},{"name":"基督受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"蒂拉登特斯日","date":"2026-04-21","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"基督圣体节","date":"2026-06-04","type":"fixed","note":"facultativo，部分企业放假"},{"name":"独立日","date":"2026-09-07","type":"fixed","note":""},{"name":"圣母显灵节","date":"2026-10-12","type":"fixed","note":""},{"name":"万灵节","date":"2026-11-02","type":"fixed","note":""},{"name":"共和国成立日","date":"2026-11-15","type":"fixed","note":""},{"name":"黑人意识日","date":"2026-11-20","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"巴西联邦政府管理部 gov.br 2026 feriados nacionais官方公告(Portaria MGI)"},{"country":"阿根廷","countryEn":"Argentina","code":"AR","timezone":"America/Argentina/Buenos_Aires","weekend":["sat","sun"],"religion":"天主教为主要信仰，近数十年世俗化明显，另有犹太教徒(拉美最大社区)与新教群体。","diet":"以牛肉、烤肉(asado)、葡萄酒、马黛茶为文化符号；商务晚宴常较晚开始(21点后)。","etiquette":"商务交谈热情健谈，见面常拥抱；时间观念灵活；重视个人关系与信任，价格谈判弹性大；西语沟通。","giftTaboo":"避免送紫色与深色花；忌讳赠送锋利物品；礼物宜小而得体。","sensitivePeriod":"圣诞新年(12月下旬-1月初)；夏季暑假(1-2月，全国几乎停摆)；狂欢节(2月中)；圣周(4月初)。","fridayHabit":"正常办公，周五下午常提前进入周末节奏。","officeHours":"09:00-18:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"狂欢节","date":"2026-02-16","range":"2026-02-16~2026-02-17","type":"fixed","note":"周一、周二"},{"name":"真理正义记忆日","date":"2026-03-24","type":"fixed","note":"纪念1976政变"},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"五月革命日","date":"2026-05-25","type":"fixed","note":""},{"name":"国旗日","date":"2026-06-20","type":"fixed","note":""},{"name":"独立日","date":"2026-07-09","type":"fixed","note":""},{"name":"圣马丁将军逝世纪念日","date":"2026-08-17","type":"fixed","note":"8月第3个周一"},{"name":"文化多元尊重日","date":"2026-10-12","type":"fixed","note":"哥伦布日调整"},{"name":"国家主权日","date":"2026-11-23","type":"fixed","note":"11月第4个周一"},{"name":"圣母无染原罪日","date":"2026-12-08","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"阿根廷政府 argentina.gob.ar Feriados 2026官方公告；阿根廷外交部领事日历"},{"country":"智利","countryEn":"Chile","code":"CL","timezone":"America/Santiago","weekend":["sat","sun"],"religion":"传统上天主教为主，近数十年新教福音派增长明显，社会宗教氛围在拉美相对温和。","diet":"以海鲜、葡萄酒、牛肉、皮卡饼(empanada)为代表；商务午晚餐常用红酒；部分保守人士忌在工作日午餐饮酒过量。","etiquette":"商务风格在拉美中相对正式、守时；见面握手，熟络后可贴面；谈判理性、重视合同；西语沟通。","giftTaboo":"避免送紫色花与黄色花；礼物宜低调实用；忌送过于贵重物品。","sensitivePeriod":"圣诞新年(12月下旬-1月初)；暑假(2月，全国休假潮)；Sept Fiestas Patrias(9月18-19日前后活动密集)；圣周(4月初)。","fridayHabit":"正常办公，周五下午较早下班。","officeHours":"09:00-18:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"海军光荣日","date":"2026-05-21","type":"fixed","note":""},{"name":"圣彼得与圣保罗日","date":"2026-06-29","type":"fixed","note":"移至6月最后一个周一"},{"name":"卡门圣母节","date":"2026-07-16","type":"fixed","note":""},{"name":"圣母升天日","date":"2026-08-15","type":"fixed","note":""},{"name":"国家纪念日(独立日)","date":"2026-09-18","range":"2026-09-18~2026-09-19","type":"fixed","note":"9月19日军光荣日"},{"name":"种族相遇日","date":"2026-10-12","type":"fixed","note":""},{"name":"圣母无染原罪日","date":"2026-12-08","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"智利政府 gob.cl feriados 2026官方公告；智利驻外使领馆日历"},{"country":"加拿大","countryEn":"Canada","code":"CA","timezone":"America/Toronto","weekend":["sat","sun"],"religion":"宗教多元，天主教、新教信徒为主，社会高度世俗化，尊重多元信仰。","diet":"饮食多元融合，商务餐常用海鲜、枫糖制品、啤酒；魁北克法语区餐酒文化浓厚；注意客人素食/清真/无麸质需求。","etiquette":"商务风格礼貌、守时、低调，重视工作与生活平衡；避免过于强势推销；魁北克区优先法语沟通。","giftTaboo":"忌送过于昂贵礼品；小礼品(公司周边、巧克力、葡萄酒)即可；避免带种族/文化争议色彩物品。","sensitivePeriod":"圣诞新年(12月下旬-1月初)；暑假(7-8月)；感恩节(10月第2个周一前后)；维多利亚日长周末(5月中)。","fridayHabit":"正常办公，周五下午较早下班。","officeHours":"09:00-17:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"家庭日","date":"2026-02-16","type":"fixed","note":"多数省份"},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"维多利亚日","date":"2026-05-18","type":"fixed","note":"5月24日前最后一个周一"},{"name":"加拿大日","date":"2026-07-01","type":"fixed","note":""},{"name":"公民假日","date":"2026-08-03","type":"fixed","note":"8月第1个周一(魁北克除外)"},{"name":"劳动节","date":"2026-09-07","type":"fixed","note":""},{"name":"真相与和解日","date":"2026-09-30","type":"fixed","note":"联邦法定假日"},{"name":"感恩节","date":"2026-10-12","type":"fixed","note":"10月第2个周一"},{"name":"国殇纪念日","date":"2026-11-11","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""},{"name":"节礼日","date":"2026-12-28","type":"fixed","note":"12月26日逢周六，周一补假"}],"source":"加拿大税务局 canada.ca public holidays 2026；Canada Post官方假日表"},{"country":"德国","countryEn":"Germany","code":"DE","timezone":"Europe/Berlin","weekend":["sat","sun"],"religion":"新教与天主教各约占三成，其余为伊斯兰教及无宗教人群，社会世俗化程度高。","diet":"以猪肉、香肠、面包、啤酒为代表；商务餐严谨，一般工作日午餐不劝酒；注意穆斯林客户禁食猪肉/酒。","etiquette":"极度守时、重规则与头衔；商务沟通直接、注重事实与技术细节；会议有议程、决策慢但执行可靠；称呼用Herr/Frau+姓+头衔。","giftTaboo":"礼品宜低调，忌过于贵重；避免送红玫瑰(浪漫)与百合花(丧葬)；包装精美。","sensitivePeriod":"圣诞新年(12月24-1月6日左右)；暑假(各州不同，多在6-8月)；复活节假期(4月初)；五旬节(5月末长周末)。","fridayHabit":"正常办公，周五下午会议较少，部分企业周五半天班。","officeHours":"09:00-17:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"复活节周一","date":"2026-04-06","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"耶稣升天节","date":"2026-05-14","type":"fixed","note":"周四，常连桥周末"},{"name":"圣灵降临周一","date":"2026-05-25","type":"fixed","note":""},{"name":"德国统一日","date":"2026-10-03","type":"fixed","note":"逢周六，部分企业10月2日周五补休"},{"name":"圣诞节","date":"2026-12-25","range":"2026-12-25~2026-12-26","type":"fixed","note":"12月26日为第二节礼日"}],"source":"德国工会DGB feiertage 2026表；德国驻外使领馆日历；Bundesrat官方日历"},{"country":"法国","countryEn":"France","code":"FR","timezone":"Europe/Paris","weekend":["sat","sun"],"religion":"传统上天主教为主，社会高度世俗化，穆斯林社群规模欧洲最大之一，宗教表达受世俗法约束。","diet":"餐酒文化极重，商务午餐时长较长；忌在工作日午餐劝酒过量；注意清真、素食与洁食需求。","etiquette":"商务沟通重逻辑与论证，见面贴面/握手；重视头衔与称呼(Monsieur/Madame)；谈判正式，开场常有寒暄；西语区不同。","giftTaboo":"礼品宜精致(巧克力、葡萄酒、书)，忌过于昂贵；避免送菊花(丧葬用花)；忌送黄玫瑰(不忠象征)。","sensitivePeriod":"8月全国暑假(大量企业关门，商务几乎停摆)；圣诞新年；五一(5月1日)；复活节(4月初)；国庆(7月14日前后)。","fridayHabit":"正常办公，周五下午社交与提前下班较普遍。","officeHours":"09:00-18:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"复活节周一","date":"2026-04-06","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"二战胜利日","date":"2026-05-08","type":"fixed","note":""},{"name":"耶稣升天节","date":"2026-05-14","type":"fixed","note":"周四，常连桥周末"},{"name":"国庆日","date":"2026-07-14","type":"fixed","note":""},{"name":"圣母升天日","date":"2026-08-15","type":"fixed","note":""},{"name":"万圣节","date":"2026-11-01","type":"fixed","note":"逢周日"},{"name":"一战停战日","date":"2026-11-11","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"法国公共服务部 service-public.gouv.fr 2026 jours fériés官方公告"},{"country":"英国","countryEn":"United Kingdom","code":"GB","timezone":"Europe/London","weekend":["sat","sun"],"religion":"圣公会为国教，天主教与穆斯林、印度教、锡克教等少数族裔宗教并存，社会高度世俗化。","diet":"传统英式餐食与多元族裔餐饮并存；商务午餐常较简单；下午茶文化；注意穆斯林/犹太客户饮食禁忌。","etiquette":"商务风格保守、守时、重礼貌；握手坚定；沟通含蓄幽默；称呼常用Mr./Ms.；重视合同与程序。","giftTaboo":"礼品宜小而得体；忌送过于贵重物品；避免送白色/黄色百合(丧葬象征)。","sensitivePeriod":"圣诞新年(12月24-1月2日)；复活节银行假(4月初)；暑假(7-8月)；5月与8月银行假日长周末。","fridayHabit":"正常办公，周五下午Pubs社交较早开始。","officeHours":"09:00-17:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"复活节周一","date":"2026-04-06","type":"fixed","note":"英格兰/威尔士"},{"name":"五月初银行假日","date":"2026-05-04","type":"fixed","note":"5月第1个周一"},{"name":"春季银行假日","date":"2026-05-25","type":"fixed","note":"5月最后一个周一"},{"name":"夏季银行假日","date":"2026-08-03","type":"fixed","note":"英格兰/威尔士8月第1个周一"},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""},{"name":"节礼日","date":"2026-12-28","type":"fixed","note":"12月26日逢周六，周一补假"}],"source":"英国政府 gov.uk bank holidays 2026；英国枢密院官方公告"},{"country":"意大利","countryEn":"Italy","code":"IT","timezone":"Europe/Rome","weekend":["sat","sun"],"religion":"天主教为主体(梵蒂冈所在地)，近数十年世俗化与移民带来穆斯林、东正教等多元信仰。","diet":"餐酒文化极重，商务午餐时间长；重视食物与餐桌礼仪；注意清真、素食需求。","etiquette":"商务沟通重视关系与寒暄，见面握手/贴面；时间观念较灵活；谈判重人情；称呼用Sig./Sig.ra；商务着装有品位。","giftTaboo":"避免送菊花(丧葬)；忌送红手帕(分手象征)；礼品宜精致小礼。","sensitivePeriod":"8月全国暑假(Ferragosto前后，大量企业关门)；圣诞新年；复活节；五一；11月初诸圣节。","fridayHabit":"正常办公，周五下午较早进入周末。","officeHours":"09:00-18:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"主显节","date":"2026-01-06","type":"fixed","note":""},{"name":"复活节周一","date":"2026-04-06","type":"fixed","note":""},{"name":"解放日","date":"2026-04-25","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"共和国日","date":"2026-06-02","type":"fixed","note":""},{"name":"圣母升天日(Ferragosto)","date":"2026-08-15","type":"fixed","note":"逢周六"},{"name":"诸圣节","date":"2026-11-01","type":"fixed","note":"逢周日"},{"name":"圣母无染原罪日","date":"2026-12-08","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","range":"2026-12-25~2026-12-26","type":"fixed","note":"12月26日圣斯德望日"}],"source":"意大利外交部驻使领馆 festività 2026官方日历；publicholidaysdates.com"},{"country":"西班牙","countryEn":"Spain","code":"ES","timezone":"Europe/Madrid","weekend":["sat","sun"],"religion":"传统上天主教为主，社会高度世俗化，移民带来穆斯林等多元信仰。","diet":"午餐时间晚(14:00-16:00)、晚餐更晚(21:00后)，塔帕斯文化；商务餐常用西班牙火腿、海鲜、葡萄酒、雪莉酒。","etiquette":"商务氛围热情，见面贴面(两侧)；时间观念灵活；重视关系建立后再谈生意；西语沟通；下午常有siesta传统(现代都市已淡化)。","giftTaboo":"避免送紫色花与菊花(丧葬)；礼品宜小；忌送锋利物品。","sensitivePeriod":"圣诞新年；圣周(4月初，南部活动盛大)；暑假(7-8月)；国庆(10月12日)；三王节(1月6日)。","fridayHabit":"正常办公，周五下午较早下班，周末社交密集。","officeHours":"09:00-17:30","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"三王节(主显节)","date":"2026-01-06","type":"fixed","note":""},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"圣母升天日","date":"2026-08-15","type":"fixed","note":"逢周六"},{"name":"国庆日","date":"2026-10-12","type":"fixed","note":""},{"name":"诸圣节","date":"2026-11-01","type":"fixed","note":"逢周日"},{"name":"宪法日","date":"2026-12-06","type":"fixed","note":"逢周日"},{"name":"圣母无染原罪日","date":"2026-12-08","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""}],"source":"西班牙国家官方公报 BOE-A-2025-21667(2026 fiestas laborales)；spain.info"},{"country":"荷兰","countryEn":"Netherlands","code":"NL","timezone":"Europe/Amsterdam","weekend":["sat","sun"],"religion":"社会高度世俗化，天主教与新教信徒比例均下降，穆斯林等移民宗教社群增长。","diet":"以奶酪、面包、鲱鱼、土豆为代表，商务午餐常简餐(三明治)；直接务实，劝酒文化淡。","etiquette":"商务风格直接、务实、守时，重视协商与共识(polderen)；沟通坦诚甚至直率；避免夸张推销；英语普及度高。","giftTaboo":"礼品宜小；避免送过于贵重物品；注意数字4与13在西方一般避讳；忌送红玫瑰(浪漫)。","sensitivePeriod":"圣诞新年；国王节(4月27日，全国橙色狂欢)；复活节(4月初)；暑假(7-8月)；五月解放节。","fridayHabit":"正常办公，周五下午较早下班。","officeHours":"09:00-17:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":"官方假日，非强制放假"},{"name":"复活节","date":"2026-04-05","range":"2026-04-05~2026-04-06","type":"fixed","note":"周日与周一"},{"name":"国王节","date":"2026-04-27","type":"fixed","note":"全国大假"},{"name":"解放日","date":"2026-05-05","type":"fixed","note":"官方假日"},{"name":"圣诞节","date":"2026-12-25","range":"2026-12-25~2026-12-26","type":"fixed","note":"两天"}],"source":"荷兰政府 government.nl / rijksoverheid.nl public holidays 2026官方Q&A"},{"country":"波兰","countryEn":"Poland","code":"PL","timezone":"Europe/Warsaw","weekend":["sat","sun"],"religion":"天主教信徒占多数(约87%)，宗教在社会与公共生活中影响显著。","diet":"以饺子(pierogi)、猪肉、香肠、伏特加为代表；商务餐正式；注意穆斯林客户禁食猪肉。","etiquette":"商务沟通正式、守时；见面握手；重视头衔与礼貌；谈判稳重；天主教节日社交场合多。","giftTaboo":"避免送空钱包(破财寓意)；奇数朵花为宜，忌送菊花(丧葬)；礼品宜得体。","sensitivePeriod":"圣诞新年(12月24-26及新年)；复活节(4月初)；5月1-3日(劳动节+宪法日连休)；暑假(7-8月)。","fridayHabit":"正常办公，周五下午较早下班。","officeHours":"09:00-17:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"主显节(三王节)","date":"2026-01-06","type":"fixed","note":""},{"name":"复活节","date":"2026-04-05","range":"2026-04-05~2026-04-06","type":"fixed","note":"周日与周一(复活节周一)"},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"宪法日","date":"2026-05-03","type":"fixed","note":""},{"name":"基督圣体节","date":"2026-06-04","type":"fixed","note":"周四"},{"name":"圣母升天日","date":"2026-08-15","type":"fixed","note":""},{"name":"诸圣节","date":"2026-11-01","type":"fixed","note":""},{"name":"独立日","date":"2026-11-11","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","range":"2026-12-25~2026-12-26","type":"fixed","note":"两天"}],"source":"wolnedni.com kalendarz świąt 2026；leavebalance.com Poland 2026；波兰劳动法"},{"country":"俄罗斯","countryEn":"Russia","code":"RU","timezone":"Europe/Moscow","weekend":["sat","sun"],"religion":"东正教为主要传统宗教，伊斯兰教在南部地区影响大，社会世俗化程度较高。","diet":"以黑面包、鱼子酱、酸奶油、伏特加为代表；商务宴请酒文化浓厚但近年趋理性；注意清真客户。","etiquette":"等级观念强，重视对方职位与身份；商务见面握手有力；谈判节奏谨慎，决策集中；初次商务送礼宜得体。","giftTaboo":"忌送黄色花(分离/分手寓意)；花须为奇数朵；忌送钝器/手帕；避免送与13相关物品。","sensitivePeriod":"新年长假(1月1-10日左右，全国连休)；5月长假(五一+胜利日)；圣诞(1月7日东正教)；暑假(7-8月)。","fridayHabit":"正常办公，周五下午较早进入周末。","officeHours":"09:00-18:00","holidays":[{"name":"新年假期","date":"2026-01-01","range":"2026-01-01~2026-01-08","type":"fixed","note":"含1月7日东正教圣诞节，全国连休"},{"name":"祖国保卫者日","date":"2026-02-23","type":"fixed","note":"连休2月21-23日"},{"name":"国际妇女节","date":"2026-03-08","type":"fixed","note":"逢周日，3月9日周一补休"},{"name":"春天劳动节","date":"2026-05-01","type":"fixed","note":"连休5月1-3日"},{"name":"胜利日","date":"2026-05-09","type":"fixed","note":"逢周六，连休5月9-11日"},{"name":"俄罗斯日","date":"2026-06-12","type":"fixed","note":"连休6月12-14日"},{"name":"民族团结日","date":"2026-11-04","type":"fixed","note":""},{"name":"圣诞节","date":"2026-01-07","type":"fixed","note":"东正教圣诞，已含于新年假期"}],"source":"俄罗斯政府令No.1466(2025-09-24)；consultant.ru 2026生产日历；government.ru"},{"country":"澳大利亚","countryEn":"Australia","code":"AU","timezone":"Australia/Sydney","weekend":["sat","sun"],"religion":"基督教传统为主，社会高度世俗化，穆斯林、佛教、印度教等移民宗教社群增长。","diet":"多元餐饮与海鲜、烧烤文化；商务午餐轻松随意；对客人饮食禁忌(素食、清真、无麸质)敏感。","etiquette":"商务风格随和、平等、直接，避免等级化；重视工作生活平衡；常用昵称；守时但氛围轻松。","giftTaboo":"礼品宜小；忌送过于贵重物品；避免带种族争议物品；葡萄酒、巧克力常见。","sensitivePeriod":"圣诞新年(12月下旬-1月下旬，暑假)；复活节(4月初)；澳新军团日(4月25日)；各州学校假期。","fridayHabit":"正常办公，周五下午常较早结束，Weekend社交文化浓。","officeHours":"09:00-17:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"澳大利亚日","date":"2026-01-26","type":"fixed","note":""},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"复活节周六","date":"2026-04-04","type":"fixed","note":""},{"name":"复活节周日","date":"2026-04-05","type":"fixed","note":""},{"name":"复活节周一","date":"2026-04-06","type":"fixed","note":""},{"name":"澳新军团日","date":"2026-04-25","type":"fixed","note":"逢周六，4月27日周一补假"},{"name":"国王诞辰","date":"2026-06-08","type":"fixed","note":"东部各州"},{"name":"劳动节","date":"2026-10-05","type":"fixed","note":"东部各州(ACT/NSW)"},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""},{"name":"节礼日","date":"2026-12-28","type":"fixed","note":"12月26日逢周六，周一补假"}],"source":"澳大利亚公平工作监察署 fairwork.gov.au 2026 public holidays；ACT/DFAT官方日历"},{"country":"埃及","countryEn":"Egypt","code":"EG","timezone":"Africa/Cairo","weekend":["fri","sat"],"religion":"穆斯林约占九成(多为逊尼派)，其余主要为科普特基督徒；宗教对日常商务影响显著。","diet":"穆斯林客户禁食猪肉与酒精；商务宴请选清真餐厅；斋月期间白天工作与用餐受限；尊重祈祷时间。","etiquette":"商务重视关系与信任，节奏较慢；见面握手(同性之间)；避免用左手传递物品；尊重宗教习俗与性别界限；阿拉伯语/英语沟通。","giftTaboo":"避免送酒精、猪皮制品、狗形象物品；避免送过于暴露图案礼物；礼品宜私下赠送；不要当面打开礼物。","sensitivePeriod":"斋月(2026年约2月18日-3月19日)与开斋节(3月19-23日)；宰牲节(5月27-31日)；圣诞(1月7日科普特)；暑假(7-8月)。","fridayHabit":"周五为聚礼日，政府与企业多休息；周四下午较早下班。","officeHours":"09:00-15:00","holidays":[{"name":"科普特圣诞节","date":"2026-01-07","type":"fixed","note":""},{"name":"革命日/警察节","date":"2026-01-25","type":"fixed","note":""},{"name":"开斋节","date":"2026-03-20","range":"2026-03-19~2026-03-23","type":"islamic","note":"斋月结束，连休数日"},{"name":"闻风节","date":"2026-04-13","type":"fixed","note":"复活节后周一，古埃及传统春季节"},{"name":"西奈解放日","date":"2026-04-25","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"宰牲节","date":"2026-05-27","range":"2026-05-27~2026-05-31","type":"islamic","note":"连休数日"},{"name":"六月三十日革命日","date":"2026-06-30","type":"fixed","note":""},{"name":"七月革命日","date":"2026-07-01","type":"fixed","note":"逢周三，7月2日周四补休"},{"name":"武装部队节","date":"2026-10-06","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":"全国性假日"}],"source":"埃及总统府 presidency.eg 2026官方假日公告；UNHCR Egypt日历；美驻埃使馆日历"},{"country":"南非","countryEn":"South Africa","code":"ZA","timezone":"Africa/Johannesburg","weekend":["sat","sun"],"religion":"基督教信徒占多数(约八成)，祖鲁/科萨等传统信仰与穆斯林、印度教社群并存。","diet":"多元饮食，braai(烧烤)文化浓厚；商务餐常见；注意穆斯林与印度教客户饮食禁忌。","etiquette":"商务风格正式、守时；见面握手；重视种族与文化敏感；英语为通用商务语；谈判务实。","giftTaboo":"礼品宜小；忌送过于贵重物品；尊重本地文化禁忌；避免带有政治争议色彩礼物。","sensitivePeriod":"圣诞新年(12月下旬-1月初)；暑假(12月-1月)；人权日(3月21日)；自由日(4月27日)；遗产日(9月24日)。","fridayHabit":"正常办公，周五下午较早下班。","officeHours":"08:30-16:30","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"人权日","date":"2026-03-21","type":"fixed","note":"逢周六"},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"家庭日","date":"2026-04-06","type":"fixed","note":"复活节周一"},{"name":"自由日","date":"2026-04-27","type":"fixed","note":"纪念1994年首次民主选举"},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"青年日","date":"2026-06-16","type":"fixed","note":""},{"name":"全国妇女日","date":"2026-08-10","type":"fixed","note":"8月9日逢周日，周一补假"},{"name":"遗产日","date":"2026-09-24","type":"fixed","note":""},{"name":"和解日","date":"2026-12-16","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""},{"name":"善意日(Boxing Day)","date":"2026-12-28","type":"fixed","note":"12月26日逢周六，周一补假"}],"source":"南非政府 gov.za public holidays 2026官方公告；Public Holidays Act 1994"},{"country":"尼日利亚","countryEn":"Nigeria","code":"NG","timezone":"Africa/Lagos","weekend":["sat","sun"],"religion":"穆斯林(北部为主)与基督徒(南部为主)约各占一半，传统信仰并存；宗教对商务影响显著。","diet":"穆斯林客户禁食猪肉与酒精；南部基督徒饮食多元；商务宴请宜选清真或中性餐厅；注意斋戒。","etiquette":"商务重视关系与面子；见面握手寒暄时间长；时间观念较灵活；英语为官方商务语；付款与信用证安全需格外注意。","giftTaboo":"避免送酒精与猪肉制品；礼品宜私下赠送；避免用左手递物；尊重宗教节日。","sensitivePeriod":"开斋节(3月20-21日)；宰牲节(5月27-28日)；圣诞新年；复活节(4月初)；暑假。","fridayHabit":"北部穆斯林周五中午聚礼，部分企业周五下午休息；其他地区正常办公。","officeHours":"08:00-17:00","holidays":[{"name":"元旦","date":"2026-01-01","type":"fixed","note":""},{"name":"开斋节","date":"2026-03-20","range":"2026-03-20~2026-03-21","type":"islamic","note":"连休两日"},{"name":"耶稣受难日","date":"2026-04-03","type":"fixed","note":""},{"name":"复活节周一","date":"2026-04-06","type":"fixed","note":""},{"name":"劳动节","date":"2026-05-01","type":"fixed","note":""},{"name":"宰牲节","date":"2026-05-27","range":"2026-05-27~2026-05-28","type":"islamic","note":"连休两日"},{"name":"民主日","date":"2026-06-12","type":"fixed","note":""},{"name":"独立日","date":"2026-10-01","type":"fixed","note":""},{"name":"圣诞节","date":"2026-12-25","type":"fixed","note":""},{"name":"节礼日","date":"2026-12-26","type":"fixed","note":""}],"source":"尼日利亚驻渥太华高专署 public holidays 2026；nigeriaholidays.com.ng；尼日利亚联邦信息部公告"}]
+const WD_NAMES=['sun','mon','tue','wed','thu','fri','sat'];
+const RAMADAN_START='2026-02-18', RAMADAN_END='2026-03-19';
+function todayStr(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function isIslamicCountry(c){ return c.religion.indexOf('伊斯兰')>=0||c.religion.indexOf('穆斯林')>=0; }
+function countryFlags(c,today){
+  const wd=WD_NAMES[new Date().getDay()];
+  const flags={holiday:false,weekend:false,friday:false,ramadan:false};
+  c.holidays.forEach(h=>{
+    if(h.date===today) flags.holiday=true;
+    if(h.range){ const p=h.range.split('~'); if(p.length===2&&today>=p[0]&&today<=p[1]) flags.holiday=true; }
+  });
+  if(c.weekend.indexOf(wd)>=0) flags.weekend=true;
+  if(wd==='fri'&&c.fridayHabit&&c.fridayHabit.indexOf('周五')>=0&&c.fridayHabit.indexOf('正常办公')!==0) flags.friday=true;
+  if(isIslamicCountry(c)&&today>=RAMADAN_START&&today<=RAMADAN_END) flags.ramadan=true;
+  return flags;
+}
+function typeBadge(t){
+  if(t==='fixed') return '<span class="tag tag-auto">公历</span>';
+  if(t==='lunar') return '<span class="tag tag-home">农历</span>';
+  if(t==='islamic') return '<span class="tag tag-isl">伊斯兰历</span>';
+  return '<span class="tag tag-isl">历法节日</span>';
+}
+function localTime(tz){
+  try{ return new Intl.DateTimeFormat('zh-CN',{timeZone:tz,hour:'2-digit',minute:'2-digit',weekday:'short'}).format(new Date()); }
+  catch(e){ return tz; }
+}
+function renderCountries(filter){
+  const today=todayStr();
+  const grid=$('country-grid');
+  grid.innerHTML='';
+  const f=(filter||'').trim().toLowerCase();
+  COUNTRIES.forEach((c,idx)=>{
+    if(f&&c.country.toLowerCase().indexOf(f)<0&&c.countryEn.toLowerCase().indexOf(f)<0&&c.code.toLowerCase().indexOf(f)<0) return;
+    const fl=countryFlags(c,today);
+    const card=document.createElement('div');
+    card.className='ccard'+(fl.holiday?' today-holiday':'');
+    card.id='country-'+idx;
+    let badges='';
+    if(fl.holiday) badges+='<span class="badge b-holiday">今日放假</span>';
+    if(fl.weekend) badges+='<span class="badge b-weekend">今日周末</span>';
+    if(fl.friday) badges+='<span class="badge b-fri">周五祈祷 / 短班</span>';
+    if(fl.ramadan) badges+='<span class="badge b-ramadan">斋月期间</span>';
+    badges+='<span class="badge b-local">当地 '+localTime(c.timezone)+'</span>';
+    let hols='';
+    c.holidays.forEach(h=>{
+      hols+='<div class="h-row"><span class="h-date">'+h.date+'</span><span class="h-name">'+h.name+' '+typeBadge(h.type)+(h.range?' <span class="h-note">连休 '+h.range+'</span>':'')+(h.note?' <span class="h-note">'+h.note+'</span>':'')+'</span></div>';
+    });
+    card.innerHTML=
+      '<div class="ccard-head"><span class="ccard-name">'+c.country+'</span><span class="ccard-en">'+c.countryEn+'</span><span class="ccard-code">'+c.code+'</span><span class="ccard-tz">'+c.timezone+'</span></div>'+
+      '<div class="badge-row">'+badges+'</div>'+
+      '<div class="holiday-list">'+hols+'</div>'+
+      '<div class="cult">'+
+        '<div class="cult-row"><b>宗教构成：</b>'+c.religion+'</div>'+
+        '<div class="cult-row"><b>饮食禁忌：</b>'+c.diet+'</div>'+
+        '<div class="cult-row"><b>商务礼仪：</b>'+c.etiquette+'</div>'+
+        '<div class="cult-row"><b>送礼禁忌：</b>'+c.giftTaboo+'</div>'+
+        '<div class="cult-row"><b>敏感期：</b>'+c.sensitivePeriod+'</div>'+
+        '<div class="cult-row"><b>周五习惯：</b>'+c.fridayHabit+'</div>'+
+        '<div class="cult-row"><b>办公时间：</b>'+c.officeHours+'</div>'+
+      '</div>'+
+      '<div class="ccard-src">来源：'+c.source+'</div>';
+    grid.appendChild(card);
+  });
+}
+function renderSummary(){
+  const today=todayStr();
+  const box=$('holiday-summary');
+  const hits=[];
+  COUNTRIES.forEach((c,idx)=>{
+    const fl=countryFlags(c,today);
+    if(fl.holiday||fl.weekend||fl.friday||fl.ramadan){
+      const reasons=[];
+      if(fl.holiday) reasons.push('放假');
+      if(fl.weekend) reasons.push('周末');
+      if(fl.friday) reasons.push('周五短班');
+      if(fl.ramadan) reasons.push('斋月');
+      hits.push({idx:idx,name:c.country,reasons:reasons.join('+')});
+    }
+  });
+  let html='<b>今日（'+today+'）放假 / 可能放假国家：共 '+hits.length+' 个</b><br>';
+  if(hits.length===0){ html+='今日无命中国家。'; }
+  else{
+    hits.forEach(h=>{ html+='<span class="chip" onclick="jumpCountry('+h.idx+')">'+h.name+'（'+h.reasons+'）</span>'; });
+  }
+  box.innerHTML=html;
+}
+function jumpCountry(idx){
+  const el=document.getElementById('country-'+idx);
+  if(!el) return;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+$('country-filter').addEventListener('input',e=>renderCountries(e.target.value));
+renderSummary();
+renderCountries('');
+
+/* ========== 词汇卡片 + 视图切换 ========== */
+/* 本地内置词库（只读） */
+const VOCAB=[
+ /* 产品生命周期 */
+ {cn:'ACTIVE',en:'Active',desc:'原厂正常量产在售，新项目放心选用。',cat:'产品生命周期'},
+ {cn:'NRND',en:'Not Recommended for New Designs',desc:'不推荐用于新项目设计：还能买，但原厂已劝退，新项目别选，老项目继续用。',cat:'产品生命周期'},
+ {cn:'PDN',en:'Product Discontinuance Notice',desc:'产品停产通知：原厂告别预告，告知即将停产，抓紧最后下单。',cat:'产品生命周期'},
+ {cn:'LTB',en:'Last Time Buy',desc:'最后下单截止日：PDN 后最后一次下单机会，过了这村没这店。',cat:'产品生命周期'},
+ {cn:'EOL',en:'End of Life',desc:'生命周期终止：正式宣告停产，连最后一单都不让下。',cat:'产品生命周期'},
+ {cn:'OBSOLETE',en:'Obsolete',desc:'已淘汰/已停产：比 EOL 更彻底，产品彻底凉透。',cat:'产品生命周期'},
+ {cn:'YEOL',en:'Year of EOL',desc:'预估停产年份，用于项目周期规划。',cat:'产品生命周期'},
+ {cn:'PCN',en:'Product Change Notice',desc:'产品变更通知：产品仍在售，但内部物料/封装/工艺变更，老客户需重新验证。',cat:'产品生命周期'},
+ {cn:'ECN',en:'Engineering Change Notice',desc:'工程变更通知：偏内部工程端的变更通知，与 PCN 类似但更偏技术执行。',cat:'产品生命周期'},
+ /* 环保与合规 */
+ {cn:'RoHS',en:'Restriction of Hazardous Substances',desc:'有害物质限制：欧盟强制法规，铅汞镉等 10 种有害物质不得超标的准入门槛。',cat:'环保与合规'},
+ {cn:'REACH',en:'Registration, Evaluation, Authorisation of Chemicals',desc:'化学品注册评估授权：欧盟另一套环保法规，重点跟踪 SVHC 高关注物质清单。',cat:'环保与合规'},
+ {cn:'HF',en:'Halogen Free',desc:'无卤：不含氯、溴等卤素，绿色板卡常用要求。',cat:'环保与合规'},
+ {cn:'Pb-Free',en:'Lead Free',desc:'无铅：焊点/引脚不含铅，与 RoHS 强相关。',cat:'环保与合规'},
+ {cn:'MSL',en:'Moisture Sensitivity Level',desc:'湿敏等级：SMD 器件拆封后耐湿时限与烘烤要求，共 1~6 级。',cat:'环保与合规'},
+ {cn:'MSL 3',en:'Moisture Sensitivity Level 3',desc:'湿敏等级 3：车间暴露不超过 168 小时（7 天），超时需烘烤除湿。',cat:'环保与合规'},
+ /* 采购与包装 */
+ {cn:'MOQ',en:'Minimum Order Quantity',desc:'最小起订量：低于此数量原厂/代理不接单。',cat:'采购与包装'},
+ {cn:'SPQ',en:'Standard Pack Quantity',desc:'标准包装量：一盘/一卷的标准数量，如 4000 pcs/盘。',cat:'采购与包装'},
+ {cn:'MPQ',en:'Minimum Package Quantity',desc:'最小包装量：最少须整包采购，不可拆零。',cat:'采购与包装'},
+ {cn:'BOM',en:'Bill of Materials',desc:'物料清单：客户发出的采购购物车，报价主依据。',cat:'采购与包装'},
+ {cn:'D/C',en:'Date Code',desc:'日期码：器件丝印的生产批次日期，如 24+ 表示 2024 年。',cat:'采购与包装'},
+ {cn:'LOT',en:'Lot Number',desc:'批次号：同一生产批次的标识，可追溯。',cat:'采购与包装'},
+ {cn:'DAP',en:'Delivered at Place',desc:'目的地交货：贸易术语，卖家包运送到指定地点。',cat:'采购与包装'},
+ {cn:'FOB',en:'Free On Board',desc:'船上交货：贸易术语，装运港船上交货，经典外贸条款。',cat:'采购与包装'},
+ {cn:'EXW',en:'Ex Works',desc:'工厂交货：贸易术语，卖家最省事，买家上门提货。',cat:'采购与包装'},
+ /* 封装类型 */
+ {cn:'SOP/SOIC',en:'Small Outline Package',desc:'小外形封装：两侧出脚，贴片常用。',cat:'封装类型'},
+ {cn:'TSSOP',en:'Thin Shrink SOP',desc:'薄型缩距 SOP：引脚更密更薄的贴片封装。',cat:'封装类型'},
+ {cn:'QFP',en:'Quad Flat Package',desc:'四方扁平封装：四面出脚，MCU 常用。',cat:'封装类型'},
+ {cn:'QFN',en:'Quad Flat No-leads',desc:'方形无引脚封装：底部焊盘，体积小、散热好。',cat:'封装类型'},
+ {cn:'BGA',en:'Ball Grid Array',desc:'球栅阵列封装：底部阵列锡球，高引脚数芯片标配。',cat:'封装类型'},
+ {cn:'DIP',en:'Dual In-line Package',desc:'双列直插封装：插件式，老器件仍在用。',cat:'封装类型'},
+ {cn:'SOD',en:'Small Outline Diode',desc:'小外形二极管封装：二极管贴片封装形式。',cat:'封装类型'},
+ {cn:'SOT',en:'Small Outline Transistor',desc:'小外形晶体管封装：MOS/三极管贴片封装，SOT-23 最常见。',cat:'封装类型'},
+ /* 行业角色 */
+ {cn:'OEM',en:'Original Equipment Manufacturer',desc:'原始设备制造商：自有品牌自有制造（如小米）。',cat:'行业角色'},
+ {cn:'ODM',en:'Original Design Manufacturer',desc:'原始设计制造商：帮他人设计+制造（如龙旗）。',cat:'行业角色'},
+ {cn:'EMS',en:'Electronics Manufacturing Services',desc:'电子制造服务商：纯代工贴板，如富士康。',cat:'行业角色'},
+ {cn:'IDH',en:'Independent Design House',desc:'独立设计公司：帮客户做方案设计。',cat:'行业角色'},
+ {cn:'Distributor',en:'—',desc:'代理商/分销商：原厂与终端间的中间商，如安富利、艾睿。',cat:'行业角色'},
+ /* 贸易术语 */
+ {cn:'CIF',en:'Cost, Insurance and Freight',desc:'到岸价：成本+保险+运费，卖方负责租船订舱并交付目的港。',cat:'贸易术语'},
+ {cn:'FCA',en:'Free Carrier',desc:'货交承运人：卖方将已报关的货物交给买方指定的承运人，适合集装箱多式联运。',cat:'贸易术语'},
+ /* 元器件 */
+ {cn:'电感',en:'Inductor',desc:'储能被动元件，通直流阻交流，电源滤波与储能核心件。',cat:'元器件'},
+ {cn:'功率电感',en:'Power Inductor',desc:'大电流储能电感，DC-DC 与电源模块主力器件。',cat:'元器件'},
+ {cn:'磁珠',en:'Ferrite Bead',desc:'高频噪声抑制元件，吸收尖峰干扰转化为热。',cat:'元器件'},
+ {cn:'贴片电容',en:'SMD Capacitor (MLCC)',desc:'表贴多层陶瓷电容，电源去耦与滤波最常用。',cat:'元器件'},
+ {cn:'钽电容',en:'Tantalum Capacitor',desc:'高容值贴片电解电容，滤波与储能。',cat:'元器件'},
+ {cn:'贴片电阻',en:'SMD Resistor',desc:'表面贴装电阻，限流分压最基础件。',cat:'元器件'},
+ {cn:'铝电解电容',en:'Aluminum Electrolytic Capacitor',desc:'大容量低频滤波电容，电源入口常用。',cat:'元器件'},
+ {cn:'Tolerance',en:'精度公差',desc:'器件参数允许偏差范围，如 ±10%、±5%。',cat:'元器件'},
+ /* 商务单证 */
+ {cn:'Datasheet',en:'规格书',desc:'器件官方技术文档，含参数、封装、应用与可靠性数据。',cat:'商务单证'},
+ {cn:'RFQ',en:'Request for Quotation',desc:'报价请求：客户发询价单，要求供应商报价格与交期。',cat:'商务单证'},
+ {cn:'Lead Time',en:'交期',desc:'从下单到到货的周期，期货料常以周计。',cat:'商务单证'}
+];
+/* 三分类体系：旧细分标签 → 行业词 / 行业外贸词；品牌卡归 行业品牌 */
+const CAT3_MAP={'产品生命周期':'行业词','环保与合规':'行业词','封装类型':'行业词','元器件':'行业词',
+  '贸易术语':'行业外贸词','采购与包装':'行业外贸词','行业角色':'行业外贸词','商务单证':'行业外贸词'};
+function cat3Of(v){ return CAT3_MAP[v.cat]||v.cat; }
+function rebuildCats(){
+  const sel=$('vocab-cat');
+  sel.innerHTML='<option>全分类</option><option>行业词</option><option>行业外贸词</option><option>行业品牌</option>';
+}
+function cardFilter(v){
+  const cat=$('vocab-cat').value, q=$('vocab-search').value.trim().toLowerCase();
+  if(cat==='行业品牌') return false;
+  if(cat!=='全分类'&&cat3Of(v)!==cat) return false;
+  if(q&&v.cn.toLowerCase().indexOf(q)<0&&v.en.toLowerCase().indexOf(q)<0&&v.desc.toLowerCase().indexOf(q)<0) return false;
+  return true;
+}
+function renderVocab(){
+  const grid=$('vocab-grid'); grid.innerHTML='';
+  VOCAB.forEach((v,i)=>{
+    if(!cardFilter(v)) return;
+    const d=document.createElement('div');
+    d.className='vocab-card';
+    d.innerHTML='<div class="vocab-name">'+v.cn+'</div><div class="vocab-en">'+v.en+'</div><div class="vocab-desc">'+v.desc+'</div>'
+      +thumbHtml(v)
+      +'<span class="vocab-tag">'+cat3Of(v)+'</span><span class="vocab-tag" style="background:#f5f5f5;color:#999">'+v.cat+'</span>'
+      +'<div style="margin-top:10px">'+uploadBtn(v.cn)+'</div>';
+    grid.appendChild(d);
+  });
+}
+function renderMine(){
+  const arr=loadSaved();
+  $('mine-count').textContent=arr.length;
+  $('mine-empty').style.display=arr.length?'none':'block';
+  const grid=$('mine-grid'); grid.innerHTML='';
+  arr.forEach(v=>{
+    if(!cardFilter(v)) return;
+    const d=document.createElement('div');
+    d.className='vocab-card';
+    d.innerHTML='<div class="vocab-name">'+v.cn+'</div><div class="vocab-en">'+v.en+'</div><div class="vocab-desc">'+v.desc+'</div>'
+      +thumbHtml(v)
+      +'<span class="vocab-tag">我的保存 · '+cat3Of(v)+'</span>'
+      +'<div style="margin-top:10px"><button class="vocab-del" onclick="removeSaved(\''+v.cn+'\')">删除</button>'
+      +uploadBtn(v.cn)+'</div>';
+    grid.appendChild(d);
+  });
+}
+function removeSaved(cn){
+  const arr=loadSaved().filter(v=>v.cn!==cn);
+  try{ localStorage.removeItem(IMG_PREFIX+cn); }catch(e){}
+  saveSaved(arr); renderVocab(); renderMine(); renderDaily();
+}
+$('vocab-search').addEventListener('input',()=>{renderVocab();renderMine();});
+$('vocab-cat').addEventListener('change',()=>{
+  const isBrand=$('vocab-cat').value==='行业品牌';
+  $('brand-section').style.display=isBrand?'block':'none';
+  renderVocab(); renderMine();
+});
+rebuildCats(); renderVocab(); renderMine();
+/* ----- 每日一词（本地库 + 我的保存合并轮换，可手动换下一条） ----- */
+let dailyIdx=null;
+function renderDaily(){
+  const pool=VOCAB.concat(loadSaved());
+  if(dailyIdx===null) dailyIdx=Math.floor(Date.now()/86400000)%pool.length;
+  const v=pool[dailyIdx];
+  $('daily-word-box').innerHTML='<div class="dw-label">每日一词 · DAY '+dailyIdx+' / 共 '+pool.length+' 词</div>'
+    +'<div class="dw-name">'+v.cn+'</div><div class="dw-en">'+v.en+'</div>'
+    +thumbHtml(v)
+    +'<div class="dw-desc">'+v.desc+'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +'<button class="btn-primary" onclick="toggleSave(pool[dailyIdx]);renderMine();">一键收入我的知识点库</button>'
+    +'<button class="btn-secondary" onclick="window.open(\'https://cn.bing.com/search?q=\'+encodeURIComponent(\''+v.cn+'\'),\'_blank\')">在线释义</button>'
+    +'<button class="btn-secondary" onclick="dailyNext()">换一个</button>'
+    +'<button class="btn-secondary" onclick="pickVocabImg(\''+v.cn+'\')">上传配图</button></div>';
+}
+function dailyNext(){ dailyIdx=(dailyIdx+1)%VOCAB.concat(loadSaved()).length; renderDaily(); }
+renderDaily();
+/* ----- 工具栏：在必应搜索 / 保存到新增知识点（带去重） ----- */
+function bingSearch(){
+  const q=$('vocab-search').value.trim();
+  if(!q){ alert('请先输入要搜索的词'); return; }
+  window.open('https://cn.bing.com/search?q='+encodeURIComponent(q),'_blank');
+}
+function saveNewWord(){
+  const q=$('vocab-search').value.trim();
+  const cn=prompt('词名（必填）', q);
+  if(!cn||!cn.trim()) return;
+  const norm=s=>s.trim().toLowerCase();
+  const dup=VOCAB.some(v=>norm(v.cn)===norm(cn))||loadSaved().some(v=>norm(v.cn)===norm(cn));
+  if(dup){ alert('本地词库已有该词，不重复保存'); return; }
+  const en=prompt('英文全称（可选）','')||'';
+  const desc=prompt('释义（可选）','')||'';
+  let cat=prompt('分类标签：行业词 / 行业外贸词 / 行业品牌','行业外贸词');
+  if(['行业词','行业外贸词','行业品牌'].indexOf(cat)<0) cat='行业外贸词';
+  const arr=loadSaved();
+  arr.push({cn:cn.trim(),en:en,desc:desc,cat:cat});
+  saveSaved(arr); renderVocab(); renderMine(); renderDaily();
+  alert('已保存到新增知识点');
+}
+/* ----- 行业品牌卡（13 家海外厂商） ----- */
+const BRANDS=[
+ ['Murata 村田','日本','MLCC / 电感','全球被动器件龙头，车载全系列','https://www.murata.com'],
+ ['TDK','日本','MLCC / 电感','汽车级主力，高可靠市场','https://www.tdk.com'],
+ ['Taiyo Yuden 太诱','日本','高容 MLCC / 电感','高频与车载配套齐全','https://www.yuden.co.jp'],
+ ['Samsung Electro-Mechanics','韩国','MLCC','韩国本土供应链核心','https://www.samsungsem.com'],
+ ['Yageo 国巨','中国台湾','电阻 / MLCC','亚洲最大被动器件厂','https://www.yageo.com'],
+ ['Vishay','美国','薄膜 / 钽电容 / 电阻','军工与高可靠市场','https://www.vishay.com'],
+ ['Bourns','美国','功率电感 / 扼流圈','工业级器件口碑','https://www.bourns.com'],
+ ['Coilcraft','美国','射频电感','射频电感标杆','https://www.coilcraft.com'],
+ ['Würth Elektronik','德国','磁珠 / 电感','欧洲分销配套','https://www.we-online.com'],
+ ['Panasonic 松下','日本','电容 / 电阻','汽车与工业级','https://www.panasonic.com'],
+ ['KEMET','美国','钽电容 / MLCC','高可靠电容','https://www.kemet.com'],
+ ['Nichicon','日本','铝电解电容','车规电解','https://www.nichicon.co.jp'],
+ ['Rubycon','日本','铝电解电容','工业电源类','https://www.rubycon.co.jp']
+];
+(function(){
+  const g=$('brand-grid'); g.innerHTML='';
+  BRANDS.forEach(b=>{
+    const d=document.createElement('div');
+    d.className='vocab-card';
+    d.innerHTML='<div class="vocab-name">'+b[0]+'</div>'
+      +'<div class="vocab-en">'+b[1]+' · '+b[2]+'</div>'
+      +'<div class="vocab-desc">'+b[3]+'</div>'
+      +'<span class="vocab-tag">行业品牌</span>'
+      +'<div style="margin-top:10px"><a class="vocab-save" style="display:inline-block;text-decoration:none" href="'+b[4]+'" target="_blank">官网</a></div>';
+    g.appendChild(d);
+  });
+})();
+/* ----- 我的知识点库（localStorage） ----- */
+const LS_KEY='amber_saved_vocab';
+const IMG_PREFIX='amber_vocab_img_';
+function loadSaved(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }catch(e){ return []; } }
+function saveSaved(arr){ try{ localStorage.setItem(LS_KEY,JSON.stringify(arr)); }catch(e){} }
+function isSaved(cn){ return loadSaved().some(v=>v.cn===cn); }
+function vocabImg(v){ try{ return localStorage.getItem(IMG_PREFIX+v.cn); }catch(e){ return null; } }
+function pickVocabImg(cn){
+  const input=document.createElement('input');
+  input.type='file'; input.accept='image/*';
+  input.onchange=()=>{
+    const f=input.files[0]; if(!f) return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const MAX=400;
+        const scale=Math.min(1,MAX/Math.max(img.width,img.height));
+        const w=Math.round(img.width*scale), h=Math.round(img.height*scale);
+        const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+        cv.getContext('2d').drawImage(img,0,0,w,h);
+        try{ localStorage.setItem(IMG_PREFIX+cn,cv.toDataURL('image/jpeg',0.7)); }
+        catch(e){ alert('图片过大，请换一张'); return; }
+        renderVocab(); renderMine();
+      };
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(f);
+  };
+  input.click();
+}
+function toggleSave(v){
+  const arr=loadSaved();
+  const i=arr.findIndex(x=>x.cn===v.cn);
+  if(i>=0){ arr.splice(i,1); try{localStorage.removeItem(IMG_PREFIX+v.cn);}catch(e){} }
+  else arr.push({cn:v.cn,en:v.en,desc:v.desc,cat:v.cat});
+  saveSaved(arr); renderVocab(); renderMine();
+}
+function thumbHtml(v){
+  const src=vocabImg(v);
+  return src?'<img class="mine-thumb" src="'+src+'" alt="">':'';
+}
+function uploadBtn(cn){ return '<button class="vocab-save" style="margin-left:6px" onclick="pickVocabImg(\''+cn+'\')">上传配图</button>'; }
+/* ----- 词汇子标签 ----- */
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.toggle('active',x===b));
+  $('vocab-pane-browse').style.display=b.dataset.tab==='browse'?'block':'none';
+  $('vocab-pane-mine').style.display=b.dataset.tab==='mine'?'block':'none';
+}));
+/* ----- 行业资讯 / 展会资讯（localStorage CRUD） ----- */
+const LS_NEWS='amber_news', LS_EXPO='amber_expo';
+const DEFAULT_NEWS=[
+ {title:'村田加码车载电感产能，马来西亚新厂推进',summary:'被动器件大厂持续扩产车载与工业级电感产线，配套 EV 电源平台。',source:'Murata 官方新闻',url:'https://www.murata.com/',date:'2026-10-20'},
+ {title:'国巨库存回补温和，MLCC 价格止跌',summary:'分销市场情绪修复，渠道库存回到健康水位。',source:'DigiTimes',url:'https://www.digitimes.com/',date:'2026-10-12'},
+ {title:'顺络电子车规电感出货增长，切入海外客户供应链',summary:'国内电感龙头国际化提速，车规产品占比提升。',source:'集微网',url:'https://www.laoyaoba.com/',date:'2026-09-28'},
+ {title:'TDK 收缩消费电子业务，聚焦汽车与工业 MLCC',summary:'大厂结构调整，资源向高可靠性市场倾斜。',source:'TDK 官方',url:'https://www.tdk.com/',date:'2026-09-15'},
+ {title:'华强北现货价格指数波动收窄，贸易商利润承压',summary:'分销市场进入存量竞争，报价透明度提高。',source:'华强电子网',url:'https://www.hqew.com/',date:'2026-09-05'},
+ {title:'韩国中小电子厂加速国产化替代，对深圳被动器件采购需求上升',summary:'韩国市场对高性价比电感/电容现货需求持续。',source:'KOTRA',url:'https://www.kotra.or.kr/',date:'2026-08-20'}
+];
+const DEFAULT_EXPO=[
+ {title:'KES 2026 韩国电子展',date:'2026.10.13–16，首尔 COEX',url:'https://kes.org/'},
+ {title:'electronica 2026 慕尼黑电子展',date:'2026.11.10–13，慕尼黑',url:'https://www.electronica.de/'},
+ {title:'NEPCON Japan 2026',date:'2026.1.21–23，东京 Big Sight',url:'https://www.nepconjapan.jp/'},
+ {title:'NEPCON China 2026',date:'2026.6.2–4，上海世博展览馆',url:'https://www.nepconchina.com/'},
+ {title:'NEPCON ASIA 2026',date:'2026.10.27–29，深圳国际会展中心',url:'https://www.nepconasia.com/'},
+ {title:'SEMICON SEA 2026',date:'2026.5.5–7，吉隆坡 MITEC',url:'https://www.semiconsea.org/'}
+];
+function loadArr(k,def){ try{ const v=JSON.parse(localStorage.getItem(k)); if(Array.isArray(v)&&v.length) return v; }catch(e){} return def.slice(); }
+function persistArr(k,arr){ try{ localStorage.setItem(k,JSON.stringify(arr)); }catch(e){} }
+let newsArr=loadArr(LS_NEWS,DEFAULT_NEWS), expoArr=loadArr(LS_EXPO,DEFAULT_EXPO);
+function renderNews(){
+  const g=$('news-grid'); g.innerHTML='';
+  newsArr.forEach((n,i)=>{
+    const d=document.createElement('div');
+    d.className='vocab-card';
+    d.innerHTML='<div class="vocab-name">'+n.title+'</div><div class="vocab-desc">'+n.summary+'</div>'
+      +'<div class="vocab-en">来源：'+n.source+' · '+n.date+'</div>'
+      +'<div style="margin-top:8px"><a href="'+n.url+'" target="_blank" style="color:#1677ff;font-size:12px">查看原文</a> · <button class="vocab-del" onclick="newsDel('+i+')">删除</button></div>';
+    g.appendChild(d);
+  });
+}
+function newsAdd(){
+  const t=$('news-title').value.trim(), s=$('news-summary').value.trim(), u=$('news-url').value.trim();
+  if(!t){ alert('请填写标题'); return; }
+  newsArr.unshift({title:t,summary:s||'—',source:'手动添加',url:u||'#',date:new Date().toISOString().slice(0,10)});
+  persistArr(LS_NEWS,newsArr); renderNews();
+  $('news-title').value='';$('news-summary').value='';$('news-url').value='';
+}
+function newsDel(i){ newsArr.splice(i,1); persistArr(LS_NEWS,newsArr); renderNews(); }
+function renderExpo(){
+  const g=$('expo-grid'); g.innerHTML='';
+  expoArr.forEach((n,i)=>{
+    const d=document.createElement('div');
+    d.className='vocab-card';
+    d.innerHTML='<div class="vocab-name">'+n.title+'</div><div class="vocab-desc">'+n.date+'</div>'
+      +'<div style="margin-top:8px"><a href="'+n.url+'" target="_blank" style="color:#1677ff;font-size:12px">官网</a> · <button class="vocab-del" onclick="expoDel('+i+')">删除</button></div>';
+    g.appendChild(d);
+  });
+}
+function expoAdd(){
+  const t=$('expo-title').value.trim(), d=$('expo-date').value.trim(), u=$('expo-url').value.trim();
+  if(!t){ alert('请填写展会名称'); return; }
+  expoArr.unshift({title:t,date:d||'—',url:u||'#'});
+  persistArr(LS_EXPO,expoArr); renderExpo();
+  $('expo-title').value='';$('expo-date').value='';$('expo-url').value='';
+}
+function expoDel(i){ expoArr.splice(i,1); persistArr(LS_EXPO,expoArr); renderExpo(); }
+renderNews(); renderExpo();
+const VIEW_META={
+  vocab:['专业词汇及基础知识','积累外贸专业词汇，夯实业务基础'],
+  pn:['元器件查价','输入料号，一键打开常用报价平台'],
+  quote:['报价助手','人民币成本折算 EXW/FOB 美元价'],
+  holiday:['世界时间及节日提醒','今日放假提醒与各国文化速查'],
+  news:['行业资讯','电感 / 被动器件行业动态与分销市场趋势'],
+  expo:['展会资讯','韩国及国际主流电子展会会期提醒'],
+  settings:['设置','Google Sheets 同步与本地数据管理']
+};
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.view===name));
+  $('view-title').textContent=VIEW_META[name][0];
+  $('view-sub').textContent=VIEW_META[name][1];
+  window.scrollTo({top:0});
+}
+document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>switchView(n.dataset.view)));</script>
 </body>
 </html>
+<!-- （注：内容由AI生成） -->
